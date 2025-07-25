@@ -8,7 +8,9 @@ int main()
     printf("My name is %s \n\r", my_name);
 
     char outbuffer[5] = {};
-    snprintf(outbuffer, sizeof(outbuffer), "This_is_a_very_long_text \n\r");
+    snprintf(outbuffer, sizeof(outbuffer) + 2, "This_is_a_very_long_text \n\r");
+    // sprintf(outbuffer, "This_is_a_very_long_text \n\r");
+
     printf("%s", outbuffer);
 
     return 0;
