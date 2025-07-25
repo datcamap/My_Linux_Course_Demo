@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "stdint.h": "c"
+        "stdint.h": "c",
+        "demo_clean_code": "cpp",
+        "demo_struct_padding": "c"
     }
 }

@@ -62,7 +62,8 @@ int main()
     
     int n = 1;
     
-    if(*(char *)&n == 1) {printf("[Little Endian] \n\r");}
+    if(*(char *)&n == 1) 
+    {printf("[Little Endian] \n\r");}
     else {printf("[Big Endian] \n\r");}
     
     // printBits(sizeof(powerreg), &powerreg);
