@@ -26,6 +26,7 @@ void logMessage(LogLevel_t level, const char *file, const int line, const char *
     strftime(buffer1, sizeof(buffer1), "[%Y-%m-%d %H:%M:%S]", t);
     char buffer2[64];
     snprintf(buffer2, sizeof(buffer2), "[%s][%s:%d] - ", logLevelStrings[level], file, line);
+    
     printf("%s%s", buffer1, buffer2);
     vprintf(message, args);
     printf("\n");

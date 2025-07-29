@@ -1,3 +1,6 @@
+#ifndef LOGGER_H
+#define LOGGER_H
+
 #include <stdint.h>
 
 #define LOG_MESSAGE(level, ...)    logMessage(level, __FILE__, __LINE__, __VA_ARGS__)
@@ -44,3 +47,5 @@ static const char *logLevelStrings[] = {
 void initLogger(const char *filename, LogLevel_t level, LogMode_t mode);
 void logMessage(LogLevel_t level, const char *file, const int line, const char *message, ...);
 void setLogLevel(LogLevel_t level);
+
+#endif // LOGGER_H
