@@ -4,7 +4,7 @@
 int main() 
 {
     // Initialize the logger with a specific log file, log level, and mode
-    initLogger("app.log", LOG_DEBUG, LOG_TO_CONSOLE_AND_FILE);
+    initLogger("./bin/app.log", LOG_WARNING, LOG_TO_CONSOLE_AND_FILE);
 
     // Example usage of the logger
     LOG_MESSAGE(LOG_INFO, "This is an info message.");

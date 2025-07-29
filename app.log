@@ -1,5 +1,0 @@
-[2025-07-29 09:35:38] [INFO][./2-Standard_IO/main.c:10] - This is an info message.
-[2025-07-29 09:35:38] [WARNING][./2-Standard_IO/main.c:11] - This is a warning message.
-[2025-07-29 09:35:38] [ERROR][./2-Standard_IO/main.c:12] - This is an error message.
-[2025-07-29 09:35:38] [DEBUG][./2-Standard_IO/main.c:13] - This is a debug message.
-[2025-07-29 09:35:38] [DEBUG][./2-Standard_IO/main.c:17] - Debugging enabled.
