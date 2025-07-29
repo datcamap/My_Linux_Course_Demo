@@ -11,7 +11,7 @@ LED_Controller_t *ledControllerStatus;
 LED_Controller_t *ledControllerPump;
 LED_Controller_t *ledControllerWarning;
 time_t sensorTimeStamp = 0;
-time_t imformTimeStamp = 0;
+time_t informTimeStamp = 0;
 float moisture = 0.0f;
 
 void initializeSystem()
@@ -159,9 +159,10 @@ int main()
             moisture = getSensorData(moistureSensor);
         }
 
-        if (time(NULL) - sensorTimeStamp >= SENSOR_READ_INTERVAL) {
+        if (time(NULL) - informTimeStamp >= systemConfig->informingInterval) {
             sensorTimeStamp = time(NULL);
-            printf("Reading moisture sensor data...\n");
+            printf("Moisture: %.2f%% \n", moisture);
+            printf("Pump state: %s \n", pumpController1->pumpState == PUMP_ON ? "ON" : "OFF");
             moisture = getSensorData(moistureSensor);
         }
 
