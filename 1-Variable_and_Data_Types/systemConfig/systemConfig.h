@@ -15,11 +15,11 @@ typedef struct SystemConfig {
     uint32_t informingInterval; // Interval for reading sensor data in seconds
 } SystemConfig_t;
 
-SystemConfig_t *createSystemConfig( SystemMode_t mode, 
+SystemConfig_t *getSystemConfig(void);
+SystemConfig_t *updateSystemConfig( SystemMode_t mode, 
                                     float moistureThresholdMIN, 
                                     float moistureThresholdMAX, 
                                     uint32_t pumpWaitTime, 
                                     uint32_t sensorReadInterval,
                                     uint32_t informingInterval);
-
 void destroySystemConfig(SystemConfig_t *config);

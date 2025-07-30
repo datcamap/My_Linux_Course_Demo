@@ -1,4 +1,6 @@
 #include "LED_Controller.h"
+#include <stdlib.h>
+#include <stdio.h>
 
 LED_Controller_t *createLEDController(uint8_t ledID, uint8_t led_GPIO)
 {
@@ -6,7 +8,7 @@ LED_Controller_t *createLEDController(uint8_t ledID, uint8_t led_GPIO)
     if (led) {
         led->ledID = ledID;
         led->led_GPIO = led_GPIO;
-        led->ledState = LED_OFF; // Initialize LED state to off
+        led->ledState = LED_UNKNOWN;
     }
     return led;
 }
@@ -21,10 +23,10 @@ LED_State_t getLEDState(LED_Controller_t *const led)
 
 void setLEDState(LED_Controller_t *led, LED_State_t state)
 {
-    if (led) {
-        led->ledState = state; // Set the LED state
-        // Here you would typically add code to control the GPIO pin for the LED
-        // For example: digitalWrite(led->led_GPIO, (state == LED_ON) ? HIGH : LOW);
+    if (NULL != led) {
+        led->ledState = state; 
+        printf("LED [%c] : _[ %s ]_ \n", led->ledID,
+               (state == LED_ON) ? "ON" : (state == LED_OFF) ? "OFF" : "UNKNOWN");
     }
 }
 

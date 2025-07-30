@@ -1,6 +1,24 @@
-#include "main.h"
+#include "pumpController.h"
+#include "moistureSensor.h"
+#include "button.h"
+#include "LED_Controller.h"
+#include "systemConfig.h"
 #include <stdio.h>
 #include <time.h>
+
+#define MOISTURE_THRESHOLD_MIN 30.0f
+#define MOISTURE_THRESHOLD_MAX 70.0f
+#define PUMP_WAIT_TIME 5 // seconds
+#define SENSOR_READ_INTERVAL 10 // seconds
+#define INFORMING_INTERVAL 6 // seconds
+
+#define MOISTURE_SENSOR_GPIO 5
+#define PUMP_GPIO 6
+#define STATE_BUTTON_GPIO 7
+#define PUMP_BUTTON_GPIO 8
+#define STATE_LED_GPIO 9
+#define PUMP_LED_GPIO 10
+#define WARNING_LED_GPIO 11
 
 SystemConfig_t *systemConfig;
 MoistureSensor_t *moistureSensor;
@@ -12,12 +30,14 @@ LED_Controller_t *ledControllerPump;
 LED_Controller_t *ledControllerWarning;
 time_t sensorTimeStamp = 0;
 time_t informTimeStamp = 0;
+time_t waitTimeStamp = 0;
 float moisture = 0.0f;
 
 void initializeSystem()
 {
     // Create system configuration
-    systemConfig = createSystemConfig(SYSTEM_MODE_AUTO, 
+    systemConfig = getSystemConfig();
+    systemConfig = updateSystemConfig(SYSTEM_MODE_AUTO, 
                                        MOISTURE_THRESHOLD_MIN, 
                                        MOISTURE_THRESHOLD_MAX, 
                                        PUMP_WAIT_TIME, 
@@ -49,7 +69,7 @@ void initializeSystem()
     }
 
     // Create button
-    buttonMode = createButton(1, STATE_BUTTON_GPIO);
+    buttonMode = createButton((uint8_t)'m', STATE_BUTTON_GPIO);
     if (NULL == buttonMode) {
         printf("Failed to create button.\n");
     }
@@ -57,7 +77,7 @@ void initializeSystem()
         printf("Button created successfully.\n");
     }
 
-    buttonPump = createButton(2, PUMP_BUTTON_GPIO);
+    buttonPump = createButton((uint8_t)'p', PUMP_BUTTON_GPIO);
     if (NULL == buttonPump) {
         printf("Failed to create button.\n");
     }
@@ -66,7 +86,7 @@ void initializeSystem()
     }
 
     // Create LED controller
-    ledControllerStatus = createLEDController(1, STATE_LED_GPIO);
+    ledControllerStatus = createLEDController((uint8_t)'M', STATE_LED_GPIO);
     if (NULL == ledControllerStatus) {
         printf("Failed to create LED controller.\n");
     }
@@ -74,7 +94,7 @@ void initializeSystem()
         printf("LED controller %d created successfully.\n", ledControllerStatus->ledID);
     }
     
-    ledControllerPump = createLEDController(2, STATE_LED_GPIO);
+    ledControllerPump = createLEDController((uint8_t)'P', STATE_LED_GPIO);
     if (NULL == ledControllerStatus) {
         printf("Failed to create LED controller.\n");
     }
@@ -82,7 +102,7 @@ void initializeSystem()
         printf("LED controller %d created successfully.\n", ledControllerPump->ledID);
     }
     
-    ledControllerWarning = createLEDController(3, STATE_LED_GPIO);
+    ledControllerWarning = createLEDController((uint8_t)'W', STATE_LED_GPIO);
     if (NULL == ledControllerStatus) {
         printf("Failed to create LED controller.\n");
     }
@@ -95,30 +115,30 @@ void wait(uint32_t seconds)
 {
     // Simulate waiting for a specified number of seconds
     printf("Waiting for %u seconds...\n", seconds);
-    // In a real system, you would use a delay function here
-    // For example: sleep(seconds);
+    waitTimeStamp = time(NULL);
+    while (time(NULL) - waitTimeStamp < seconds);
 }
 
 void handleButtonPress()
 {
     // Simulate button press handling
-    if (buttonMode->buttonState == BUTTON_PRESSED) {
+    if (getButtonState(buttonMode) == BUTTON_PRESSED) {
         if (systemConfig->mode == SYSTEM_MODE_AUTO) {
             systemConfig->mode = SYSTEM_MODE_MANUAL;
             pumpControl(pumpController1, PUMP_OFF);
             printf("Switched to manual mode.\n");
-        } else {
+        } 
+        else if (systemConfig->mode == SYSTEM_MODE_MANUAL) {
             systemConfig->mode = SYSTEM_MODE_AUTO;
             printf("Switched to automatic mode.\n");
         }
     }
 
-    if (buttonMode->buttonState == BUTTON_PRESSED) {
+    if (getButtonState(buttonPump) == BUTTON_PRESSED) {
         if (systemConfig->mode == SYSTEM_MODE_MANUAL) {
             pumpControl(pumpController1, PUMP_ON); // Activate pump in manual mode
             wait(PUMP_WAIT_TIME); // Wait for pump operation
             pumpControl(pumpController1, PUMP_OFF); // Deactivate pump after wait time
-            printf("Switched to manual mode.\n");
         }
     }
 }
@@ -128,19 +148,15 @@ void handleLED()
     // Simulate LED handling based on system state
     if (systemConfig->mode == SYSTEM_MODE_AUTO) {
         setLEDState(ledControllerStatus, LED_ON); // Turn on LED in auto mode
-        printf("LED is ON in automatic mode.\n");
     } else if (systemConfig->mode == SYSTEM_MODE_MANUAL) {
         setLEDState(ledControllerStatus, LED_OFF); // Turn off LED in manual mode
-        printf("LED is OFF in manual mode.\n");
     }
 
     // Simulate LED handling based on pump state
     if (pumpController1->pumpState == PUMP_ON) {
         setLEDState(ledControllerPump, LED_ON);
-        printf("Pump is activated.\n");
     } else if (pumpController1->pumpState == PUMP_OFF) {
         setLEDState(ledControllerPump, LED_OFF);
-        printf("Pump is inactivate.\n");
     }
 }
 
@@ -160,14 +176,12 @@ int main()
         }
 
         if (time(NULL) - informTimeStamp >= systemConfig->informingInterval) {
-            sensorTimeStamp = time(NULL);
+            informTimeStamp = time(NULL);
+            printf("\n-------------- \n");
             printf("Moisture: %.2f%% \n", moisture);
             printf("Pump state: %s \n", pumpController1->pumpState == PUMP_ON ? "ON" : "OFF");
-            moisture = getSensorData(moistureSensor);
+            printf("-------------- \n\n");
         }
-
-        handleButtonPress();
-        handleLED();
 
         if (systemConfig->mode == SYSTEM_MODE_MANUAL) {
             printf("System is in manual mode. Waiting for button press...\n");
@@ -185,6 +199,11 @@ int main()
                 pumpControl(pumpController1, PUMP_OFF); // Deactivate pump
             }
         }
+
+        handleButtonPress();
+        handleLED();
+
+        wait(1);
     }
 
     return 0; 

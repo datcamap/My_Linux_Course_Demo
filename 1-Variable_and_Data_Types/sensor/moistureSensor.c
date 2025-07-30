@@ -17,7 +17,7 @@ float getSensorData(MoistureSensor_t *const sensor)
 {
     if (sensor) {
         sensor->moisture = 100.0f*(float)rand()/(float)RAND_MAX; // Simulate reading moisture data
-        printf("Sensor ID: %d, Moisture: %.2f\n", sensor->sensorID, sensor->moisture);
+        printf("--- [Sensor ID: %d], [Moisture: %.2f%%] ---\n", sensor->sensorID, sensor->moisture);
         return sensor->moisture;
     }
     return -1.0f; // Return an error value if sensor is NULL

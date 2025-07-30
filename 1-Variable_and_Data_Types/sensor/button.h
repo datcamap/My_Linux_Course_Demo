@@ -1,3 +1,6 @@
+#ifndef BUTTON_H
+#define BUTTON_H
+
 #include <stdint.h>
 
 // Define the ButtonState_t enum to represent the state of the pump
@@ -16,3 +19,5 @@ typedef struct {
 Button_t *createButton(uint8_t buttonID, uint8_t button_GPIO);
 ButtonState_t getButtonState(Button_t *const button);
 void destroyButton(Button_t *button);
+
+#endif // BUTTON_H

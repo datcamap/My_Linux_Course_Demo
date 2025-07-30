@@ -1,4 +1,6 @@
-#include <pumpController.h>
+#include "pumpController.h"
+#include <stdlib.h>
+#include <stdio.h>
 
 PumpControl_t *createPumpControl(uint8_t pumpID, uint8_t pump_GPIO)
 {
@@ -23,8 +25,8 @@ void pumpControl(PumpControl_t *pump, PumpState_t state)
 {
     if (pump) {
         pump->pumpState = state; // Set the pump state
-        // Here you would typically add code to control the GPIO pin for the pump
-        // For example: digitalWrite(pump->pump_GPIO, (state == PUMP_ON) ? HIGH : LOW);
+        printf("Pump ID: %d, State: %s\n", pump->pumpID,
+               (state == PUMP_ON) ? "ON" : (state == PUMP_OFF) ? "OFF" : "UNKNOWN");
     }
 }
 

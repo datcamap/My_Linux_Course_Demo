@@ -141,7 +141,11 @@ Memory alignment: Hầu hết CPU được thiết kế để truy cập dữ li
         uint8_t IPmasked[4];
     } IP_address;
 
-
+- Giả sử gán giá trị 0xC0A80101 cho thành phần IP 
+- Tùy vào kiến trúc của hệ thống là Big Endian hay Little Endian mà các byte sẽ được sắp xếp khác nhau
+    - Little Endian: 01 - 01 - A8 - C0
+    - Big Endian: C0 - A8 - 01 - 01
+- Các phần tử của mảng IPmasked[4] sẽ có giá trị theo các byte của IP
 
 #### Tagged Union
 
@@ -250,3 +254,15 @@ Một kỹ thuật tối ưu hóa được compiler sử dụng cho câu lệnh 
 - Khi chạy câu lệnh switch, CPU sẽ dùng giá trị của case như 1 chỉ số mảng để truy cập thẳng tới địa chỉ của vùng code cần thực thi
 
 ### Polling & Interrupt
+
+## **Bài 9: Mảng và con trỏ**
+
+- Con trỏ là 1 biến đặc biệt có kích thước 4 bytes trên hệ điều hành 32 bit
+- Con trỏ có thể lưu lại giá trị của 1 ô nhớ trên bộ nhớ
+
+- Con trỏ NULL
+
+### Mảng
+- Tên mảng là 1 hằng con trỏ, constant pointer
+
+### Con trỏ 2 chiều
