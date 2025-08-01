@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#define LOG_MESSAGE(level, ...)    logMessage(level, __FILE__, __LINE__, __VA_ARGS__)
+#define LOG_MESSAGE(level, ...)    log_message(level, __FILE__, __LINE__, __VA_ARGS__)
 
 typedef enum {
     LOG_EMERGENCY,
@@ -27,12 +27,6 @@ typedef struct LoggerConfig {
     uint8_t ftoFile;
 } LoggerConfig_t;
 
-static LoggerConfig_t loggerConfig = {
-    .logLevel = LOG_INFO,
-    .logFileName = "default.log",
-    .ftoFile = LOG_TO_CONSOLE
-};
-
 static const char *logLevelStrings[] = {
     "EMERGENCY",
     "ALERT",
@@ -44,8 +38,8 @@ static const char *logLevelStrings[] = {
     "DEBUG"
 };
 
-void initLogger(const char *filename, LogLevel_t level, LogMode_t mode);
-void logMessage(LogLevel_t level, const char *file, const int line, const char *message, ...);
-void setLogLevel(LogLevel_t level);
+void init_logger(const char *file_name, LogLevel_t level, LogMode_t mode);
+void log_message(LogLevel_t level, const char *file, const int line, const char *message, ...);
+void set_logLevel(LogLevel_t level);
 
 #endif // LOGGER_H

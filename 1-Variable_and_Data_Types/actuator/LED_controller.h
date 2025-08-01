@@ -13,7 +13,7 @@ typedef struct LED_Controller {
     LED_State_t ledState; // State of the LED ref: LED_State_t
 } LED_Controller_t;
 
-LED_Controller_t *createLEDController(uint8_t ledID, uint8_t led_GPIO);
-LED_State_t getLEDState(LED_Controller_t *const led);
-void setLEDState(LED_Controller_t *led, LED_State_t state);
-void destroyLEDController(LED_Controller_t *led);
+LED_Controller_t *create_LED_controller(uint8_t ledID, uint8_t led_GPIO);
+LED_State_t get_LED_state(LED_Controller_t *const led);
+void set_LED_state(LED_Controller_t *led, LED_State_t state);
+void destroy_LED_controller(LED_Controller_t *led);

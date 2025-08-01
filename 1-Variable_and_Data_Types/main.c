@@ -1,8 +1,8 @@
-#include "pumpController.h"
+#include "pump_controller.h"
 #include "moistureSensor.h"
 #include "button.h"
-#include "LED_Controller.h"
-#include "systemConfig.h"
+#include "LED_controller.h"
+#include "system_config.h"
 #include <stdio.h>
 #include <time.h>
 
@@ -20,30 +20,30 @@
 #define PUMP_LED_GPIO 10
 #define WARNING_LED_GPIO 11
 
-SystemConfig_t *systemConfig;
-MoistureSensor_t *moistureSensor;
-PumpControl_t *pumpController1;
-Button_t *buttonMode;
-Button_t *buttonPump;
-LED_Controller_t *ledControllerStatus;
-LED_Controller_t *ledControllerPump;
-LED_Controller_t *ledControllerWarning;
-time_t sensorTimeStamp = 0;
-time_t informTimeStamp = 0;
-time_t waitTimeStamp = 0;
+System_Config_t *system_Config = NULL;
+Moisture_Sensor_t *moisture_Sensor = NULL;
+Pump_Control_t *pump_Controller1 = NULL;
+Button_t *button_Mode = NULL;
+Button_t *button_Pump = NULL;
+LED_Controller_t *led_Controller_Status = NULL;
+LED_Controller_t *led_Controller_Pump = NULL;
+LED_Controller_t *led_Controller_Warning = NULL;
+time_t sensor_Time_Stamp = 0;
+time_t inform_Time_Stamp = 0;
+time_t wait_Time_Stamp = 0;
 float moisture = 0.0f;
 
-void initializeSystem()
+void initialize_system()
 {
     // Create system configuration
-    systemConfig = getSystemConfig();
-    systemConfig = updateSystemConfig(SYSTEM_MODE_AUTO, 
+    system_Config = get_system_config();
+    system_Config = update_system_config(SYSTEM_MODE_AUTO, 
                                        MOISTURE_THRESHOLD_MIN, 
                                        MOISTURE_THRESHOLD_MAX, 
                                        PUMP_WAIT_TIME, 
                                        SENSOR_READ_INTERVAL,
                                        INFORMING_INTERVAL);
-    if (NULL == systemConfig) {
+    if (NULL == system_Config) {
         printf("Failed to create system configuration.\n");
     }
     else {
@@ -51,8 +51,8 @@ void initializeSystem()
     }
 
     // Create moisture sensor
-    moistureSensor = createMoistureSensor(1, MOISTURE_SENSOR_GPIO);
-    if (NULL == moistureSensor) {
+    moisture_Sensor = create_moisture_sensor(1, MOISTURE_SENSOR_GPIO);
+    if (NULL == moisture_Sensor) {
         printf("Failed to create moisture sensor.\n");
     }
     else {
@@ -60,8 +60,8 @@ void initializeSystem()
     }
 
     // Create pump control
-    pumpController1 = createPumpControl(1, PUMP_GPIO);
-    if (NULL == pumpController1) {
+    pump_Controller1 = create_pump_control(1, PUMP_GPIO);
+    if (NULL == pump_Controller1) {
         printf("Failed to create pump control.\n");
     }
     else {
@@ -69,16 +69,16 @@ void initializeSystem()
     }
 
     // Create button
-    buttonMode = createButton((uint8_t)'m', STATE_BUTTON_GPIO);
-    if (NULL == buttonMode) {
+    button_Mode = create_button((uint8_t)'m', STATE_BUTTON_GPIO);
+    if (NULL == button_Mode) {
         printf("Failed to create button.\n");
     }
     else {
         printf("Button created successfully.\n");
     }
 
-    buttonPump = createButton((uint8_t)'p', PUMP_BUTTON_GPIO);
-    if (NULL == buttonPump) {
+    button_Pump = create_button((uint8_t)'p', PUMP_BUTTON_GPIO);
+    if (NULL == button_Pump) {
         printf("Failed to create button.\n");
     }
     else {
@@ -86,28 +86,28 @@ void initializeSystem()
     }
 
     // Create LED controller
-    ledControllerStatus = createLEDController((uint8_t)'M', STATE_LED_GPIO);
-    if (NULL == ledControllerStatus) {
+    led_Controller_Status = create_LED_controller((uint8_t)'M', STATE_LED_GPIO);
+    if (NULL == led_Controller_Status) {
         printf("Failed to create LED controller.\n");
     }
     else {
-        printf("LED controller %d created successfully.\n", ledControllerStatus->ledID);
+        printf("LED controller %d created successfully.\n", led_Controller_Status->ledID);
     }
     
-    ledControllerPump = createLEDController((uint8_t)'P', STATE_LED_GPIO);
-    if (NULL == ledControllerStatus) {
+    led_Controller_Pump = create_LED_controller((uint8_t)'P', STATE_LED_GPIO);
+    if (NULL == led_Controller_Status) {
         printf("Failed to create LED controller.\n");
     }
     else {
-        printf("LED controller %d created successfully.\n", ledControllerPump->ledID);
+        printf("LED controller %d created successfully.\n", led_Controller_Pump->ledID);
     }
     
-    ledControllerWarning = createLEDController((uint8_t)'W', STATE_LED_GPIO);
-    if (NULL == ledControllerStatus) {
+    led_Controller_Warning = create_LED_controller((uint8_t)'W', STATE_LED_GPIO);
+    if (NULL == led_Controller_Status) {
         printf("Failed to create LED controller.\n");
     }
     else {
-        printf("LED controller %d created successfully.\n", ledControllerWarning->ledID);
+        printf("LED controller %d created successfully.\n", led_Controller_Warning->ledID);
     }
 }
 
@@ -115,93 +115,93 @@ void wait(uint32_t seconds)
 {
     // Simulate waiting for a specified number of seconds
     printf("Waiting for %u seconds...\n", seconds);
-    waitTimeStamp = time(NULL);
-    while (time(NULL) - waitTimeStamp < seconds);
+    wait_Time_Stamp = time(NULL);
+    while (time(NULL) - wait_Time_Stamp < seconds);
 }
 
-void handleButtonPress()
+void handle_button_press()
 {
     // Simulate button press handling
-    if (getButtonState(buttonMode) == BUTTON_PRESSED) {
-        if (systemConfig->mode == SYSTEM_MODE_AUTO) {
-            systemConfig->mode = SYSTEM_MODE_MANUAL;
-            pumpControl(pumpController1, PUMP_OFF);
+    if (get_button_state(button_Mode) == BUTTON_PRESSED) {
+        if (system_Config->mode == SYSTEM_MODE_AUTO) {
+            system_Config->mode = SYSTEM_MODE_MANUAL;
+            pump_control(pump_Controller1, PUMP_OFF);
             printf("Switched to manual mode.\n");
         } 
-        else if (systemConfig->mode == SYSTEM_MODE_MANUAL) {
-            systemConfig->mode = SYSTEM_MODE_AUTO;
+        else if (system_Config->mode == SYSTEM_MODE_MANUAL) {
+            system_Config->mode = SYSTEM_MODE_AUTO;
             printf("Switched to automatic mode.\n");
         }
     }
 
-    if (getButtonState(buttonPump) == BUTTON_PRESSED) {
-        if (systemConfig->mode == SYSTEM_MODE_MANUAL) {
-            pumpControl(pumpController1, PUMP_ON); // Activate pump in manual mode
+    if (get_button_state(button_Pump) == BUTTON_PRESSED) {
+        if (system_Config->mode == SYSTEM_MODE_MANUAL) {
+            pump_control(pump_Controller1, PUMP_ON); // Activate pump in manual mode
             wait(PUMP_WAIT_TIME); // Wait for pump operation
-            pumpControl(pumpController1, PUMP_OFF); // Deactivate pump after wait time
+            pump_control(pump_Controller1, PUMP_OFF); // Deactivate pump after wait time
         }
     }
 }
 
-void handleLED()
+void handle_LED()
 {
     // Simulate LED handling based on system state
-    if (systemConfig->mode == SYSTEM_MODE_AUTO) {
-        setLEDState(ledControllerStatus, LED_ON); // Turn on LED in auto mode
-    } else if (systemConfig->mode == SYSTEM_MODE_MANUAL) {
-        setLEDState(ledControllerStatus, LED_OFF); // Turn off LED in manual mode
+    if (system_Config->mode == SYSTEM_MODE_AUTO) {
+        set_LED_state(led_Controller_Status, LED_ON); // Turn on LED in auto mode
+    } else if (system_Config->mode == SYSTEM_MODE_MANUAL) {
+        set_LED_state(led_Controller_Status, LED_OFF); // Turn off LED in manual mode
     }
 
     // Simulate LED handling based on pump state
-    if (pumpController1->pumpState == PUMP_ON) {
-        setLEDState(ledControllerPump, LED_ON);
-    } else if (pumpController1->pumpState == PUMP_OFF) {
-        setLEDState(ledControllerPump, LED_OFF);
+    if (pump_Controller1->pump_state == PUMP_ON) {
+        set_LED_state(led_Controller_Pump, LED_ON);
+    } else if (pump_Controller1->pump_state == PUMP_OFF) {
+        set_LED_state(led_Controller_Pump, LED_OFF);
     }
 }
 
 int main()
 {
-    sensorTimeStamp = time(NULL);
-    printf("Current timestamp: %ld\n", sensorTimeStamp);
+    sensor_Time_Stamp = time(NULL);
+    printf("Current timestamp: %ld\n", sensor_Time_Stamp);
 
-    initializeSystem();
+    initialize_system();
 
     while (1)
     {
-        if (time(NULL) - sensorTimeStamp >= systemConfig->sensorReadInterval) {
-            sensorTimeStamp = time(NULL);
+        if (time(NULL) - sensor_Time_Stamp >= system_Config->sensor_read_interval) {
+            sensor_Time_Stamp = time(NULL);
             printf("Reading moisture sensor data...\n");
-            moisture = getSensorData(moistureSensor);
+            moisture = get_sensor_data(moisture_Sensor);
         }
 
-        if (time(NULL) - informTimeStamp >= systemConfig->informingInterval) {
-            informTimeStamp = time(NULL);
+        if (time(NULL) - inform_Time_Stamp >= system_Config->informing_interval) {
+            inform_Time_Stamp = time(NULL);
             printf("\n-------------- \n");
             printf("Moisture: %.2f%% \n", moisture);
-            printf("Pump state: %s \n", pumpController1->pumpState == PUMP_ON ? "ON" : "OFF");
+            printf("Pump state: %s \n", pump_Controller1->pump_state == PUMP_ON ? "ON" : "OFF");
             printf("-------------- \n\n");
         }
 
-        if (systemConfig->mode == SYSTEM_MODE_MANUAL) {
+        if (system_Config->mode == SYSTEM_MODE_MANUAL) {
             printf("System is in manual mode. Waiting for button press...\n");
             // Here you would typically wait for a button press to change the state
             // For example: if (button->buttonState == BUTTON_PRESSED) { ... }
         }
-        else if (systemConfig->mode == SYSTEM_MODE_AUTO) {
+        else if (system_Config->mode == SYSTEM_MODE_AUTO) {
             printf("System is in automatic mode. \n");
             // Check if the moisture level is below the minimum threshold
-            if (moisture < systemConfig->moistureThresholdMIN) {
+            if (moisture < system_Config->moisture_threshold_MIN) {
                 printf("Moisture level is below minimum threshold. Activating pump...\n");
-                pumpControl(pumpController1, PUMP_ON); // Activate pump
-            } else if (moisture > systemConfig->moistureThresholdMAX) {
+                pump_control(pump_Controller1, PUMP_ON); // Activate pump
+            } else if (moisture > system_Config->moisture_threshold_MAX) {
                 printf("Moisture level is sufficient. Pump remains off.\n");
-                pumpControl(pumpController1, PUMP_OFF); // Deactivate pump
+                pump_control(pump_Controller1, PUMP_OFF); // Deactivate pump
             }
         }
 
-        handleButtonPress();
-        handleLED();
+        handle_button_press();
+        handle_LED();
 
         wait(1);
     }

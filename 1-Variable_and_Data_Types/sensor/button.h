@@ -16,8 +16,8 @@ typedef struct {
     ButtonState_t buttonState; // State of the button ref: ButtonState_t
 } Button_t;
 
-Button_t *createButton(uint8_t buttonID, uint8_t button_GPIO);
-ButtonState_t getButtonState(Button_t *const button);
-void destroyButton(Button_t *button);
+Button_t *create_button(uint8_t buttonID, uint8_t button_GPIO);
+ButtonState_t get_button_state(Button_t *const button);
+void destroy_button(Button_t *button);
 
 #endif // BUTTON_H

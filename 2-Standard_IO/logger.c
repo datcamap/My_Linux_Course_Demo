@@ -4,17 +4,27 @@
 #include <time.h>
 #include <string.h>
 
-void initLogger(const char *filename, LogLevel_t level, LogMode_t mode)
-{
-    loggerConfig.logLevel = level,
-    loggerConfig.logFileName = (NULL != filename) ? (char *)filename : "default.log";
-    loggerConfig.ftoFile = mode;
+static LoggerConfig_t logger_config = {
+    .logLevel = LOG_INFO,
+    .logFileName = "default.log",
+    .ftoFile = LOG_TO_CONSOLE
+};
+
+LoggerConfig_t *get_logger_config(void) {
+    return &logger_config;
 }
 
-void logMessage(LogLevel_t level, const char *file, const int line, const char *message, ...)
+void init_logger(const char *file_name, LogLevel_t level, LogMode_t mode)
 {
-    if (level < LOG_EMERGENCY || level > LOG_DEBUG || level > loggerConfig.logLevel) {
-        return; // Invalid log level
+    logger_config.logLevel = level,
+    logger_config.logFileName = (NULL != file_name) ? (char *)file_name : "default.log";
+    logger_config.ftoFile = mode;
+}
+
+void log_message(LogLevel_t level, const char *file, const int line, const char *message, ...)
+{
+    if (level < LOG_EMERGENCY || level > LOG_DEBUG || level > logger_config.logLevel) {
+        return;
     }
 
     va_list args;
@@ -31,27 +41,27 @@ void logMessage(LogLevel_t level, const char *file, const int line, const char *
     vprintf(message, args);
     printf("\n");
 
-    if (loggerConfig.ftoFile == LOG_TO_CONSOLE_AND_FILE) {
-        FILE *filep = fopen(loggerConfig.logFileName, "a");
-        printf("I'm here");
+    if (logger_config.ftoFile == LOG_TO_CONSOLE_AND_FILE) {
+        FILE *filep = fopen(logger_config.logFileName, "a");
+        //printf("I'm here");
         if (filep != NULL) {
             fprintf(filep, "%s%s", buffer1, buffer2);
             vfprintf(filep, message, args);
             fprintf(filep, "\n");
             fclose(filep);
         } else {
-            fprintf(stderr, "Could not open log file: %s\n", loggerConfig.logFileName);
+            fprintf(stderr, "Could not open log file: %s\n", logger_config.logFileName);
         }
     }
 
     va_end(args);
 }
 
-void setLogLevel(LogLevel_t level)
+void set_logLevel(LogLevel_t level)
 {
     if (level < LOG_EMERGENCY || level > LOG_DEBUG) {
         fprintf(stderr, "Invalid log level: %d\n", level);
-        return; // Invalid log level
+        return;
     }
-    loggerConfig.logLevel = level;
+    logger_config.logLevel = level;
 }
