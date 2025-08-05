@@ -2,7 +2,7 @@
 
 typedef struct Moisture_Sensor {
     float moisture;
-    uint8_t sensorID;
+    uint8_t sensor_ID;
     uint8_t sensor_GPIO;
 } Moisture_Sensor_t;
 

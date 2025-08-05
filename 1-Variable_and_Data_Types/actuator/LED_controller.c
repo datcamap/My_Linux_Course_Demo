@@ -9,19 +9,19 @@
  * assigns the provided parameters to the structure fields, and
  * sets the initial LED state to `LED_UNKNOWN`.
  *
- * @param[in]  ledID     Identifier for the LED.
+ * @param[in]  led_ID     Identifier for the LED.
  * @param[in]  led_GPIO  GPIO pin number used to control the LED.
  *
  * @return Pointer to the initialized `LED_Controller_t` object if successful, 
  *         or NULL if memory allocation fails.
  */
-LED_Controller_t *create_LED_controller(uint8_t ledID, uint8_t led_GPIO)
+LED_Controller_t *create_LED_controller(uint8_t led_ID, uint8_t led_GPIO)
 {
     LED_Controller_t *led = (LED_Controller_t *)malloc(sizeof(LED_Controller_t));
     if (led) {
-        led->ledID = ledID;
+        led->led_ID = led_ID;
         led->led_GPIO = led_GPIO;
-        led->ledState = LED_UNKNOWN;
+        led->led_state = LED_UNKNOWN;
     }
     return led;
 }
@@ -37,7 +37,7 @@ LED_State_t get_LED_state(LED_Controller_t *const led)
     if (!led) {
         return LED_UNKNOWN; // Return unknown state if LED is NULL
     }
-    return led->ledState;
+    return led->led_state;
 }
 
 /**
@@ -52,8 +52,8 @@ LED_State_t get_LED_state(LED_Controller_t *const led)
 void set_LED_state(LED_Controller_t *led, LED_State_t state)
 {
     if (NULL != led) {
-        led->ledState = state; 
-        printf("LED [%c] : _[ %s ]_ \n", led->ledID,
+        led->led_state = state; 
+        printf("LED [%c] : _[ %s ]_ \n", led->led_ID,
                (state == LED_ON) ? "ON" : (state == LED_OFF) ? "OFF" : "UNKNOWN");
     }
 }

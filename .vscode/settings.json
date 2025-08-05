@@ -6,6 +6,7 @@
         "select.h": "c",
         "pumpcontroller.h": "c",
         "led_controller.h": "c",
-        "system_config.h": "c"
+        "system_config.h": "c",
+        "stdlib.h": "c"
     }
 }

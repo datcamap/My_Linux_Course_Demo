@@ -19,7 +19,7 @@ Pump_Control_t *create_pump_control(uint8_t pumpID, uint8_t pump_GPIO)
 {
     Pump_Control_t *pump = (Pump_Control_t *)malloc(sizeof(Pump_Control_t));
     if (pump) {
-        pump->pumpID = pumpID;
+        pump->pump_ID = pumpID;
         pump->pump_GPIO = pump_GPIO;
         pump->pump_state = PUMP_OFF; // Initialize pump state to off
     }
@@ -53,7 +53,7 @@ void pump_control(Pump_Control_t *pump, PumpState_t state)
 {
     if (pump) {
         pump->pump_state = state; // Set the pump state
-        printf("Pump ID: %d, State: %s\n", pump->pumpID,
+        printf("Pump ID: %d, State: %s\n", pump->pump_ID,
                (state == PUMP_ON) ? "ON" : (state == PUMP_OFF) ? "OFF" : "UNKNOWN");
     }
 }
@@ -67,7 +67,7 @@ void pump_control(Pump_Control_t *pump, PumpState_t state)
  */
 void destroy_pump_control(Pump_Control_t *pump)
 {
-    if (pump) {
+    if (pump != NULL) {
         free(pump); // Free the allocated memory for the pump
     }
 }

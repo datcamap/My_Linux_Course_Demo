@@ -8,7 +8,7 @@ typedef enum PumpState {
 } PumpState_t;
 
 typedef struct Pump_Control {
-    uint8_t pumpID;        // Unique identifier for the pump
+    uint8_t pump_ID;        // Unique identifier for the pump
     uint8_t pump_GPIO;     // GPIO pin number for the pump
     uint8_t pump_state;     // State of the pump ref: PumpState_t
 } Pump_Control_t;

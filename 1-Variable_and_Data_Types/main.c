@@ -5,6 +5,7 @@
 #include "system_config.h"
 #include <stdio.h>
 #include <time.h>
+#include <pthread.h>
 
 #define MOISTURE_THRESHOLD_MIN 30.0f
 #define MOISTURE_THRESHOLD_MAX 70.0f
@@ -91,7 +92,7 @@ void initialize_system()
         printf("Failed to create LED controller.\n");
     }
     else {
-        printf("LED controller %d created successfully.\n", led_Controller_Status->ledID);
+        printf("LED controller %d created successfully.\n", led_Controller_Status->led_ID);
     }
     
     led_Controller_Pump = create_LED_controller((uint8_t)'P', STATE_LED_GPIO);
@@ -99,7 +100,7 @@ void initialize_system()
         printf("Failed to create LED controller.\n");
     }
     else {
-        printf("LED controller %d created successfully.\n", led_Controller_Pump->ledID);
+        printf("LED controller %d created successfully.\n", led_Controller_Pump->led_ID);
     }
     
     led_Controller_Warning = create_LED_controller((uint8_t)'W', STATE_LED_GPIO);
@@ -107,7 +108,7 @@ void initialize_system()
         printf("Failed to create LED controller.\n");
     }
     else {
-        printf("LED controller %d created successfully.\n", led_Controller_Warning->ledID);
+        printf("LED controller %d created successfully.\n", led_Controller_Warning->led_ID);
     }
 }
 
@@ -119,26 +120,28 @@ void wait(uint32_t seconds)
     while (time(NULL) - wait_Time_Stamp < seconds);
 }
 
-void handle_button_press()
+void* handle_button_press(void *arg)
 {
-    // Simulate button press handling
-    if (get_button_state(button_Mode) == BUTTON_PRESSED) {
-        if (system_Config->mode == SYSTEM_MODE_AUTO) {
-            system_Config->mode = SYSTEM_MODE_MANUAL;
-            pump_control(pump_Controller1, PUMP_OFF);
-            printf("Switched to manual mode.\n");
-        } 
-        else if (system_Config->mode == SYSTEM_MODE_MANUAL) {
-            system_Config->mode = SYSTEM_MODE_AUTO;
-            printf("Switched to automatic mode.\n");
+    while (1) {
+        // Simulate button press handling
+        if (get_button_state(button_Mode) == BUTTON_PRESSED) {
+            if (system_Config->mode == SYSTEM_MODE_AUTO) {
+                system_Config->mode = SYSTEM_MODE_MANUAL;
+                pump_control(pump_Controller1, PUMP_OFF);
+                printf("Switched to [MANUAL] mode.\n");
+            } 
+            else if (system_Config->mode == SYSTEM_MODE_MANUAL) {
+                system_Config->mode = SYSTEM_MODE_AUTO;
+                printf("Switched to [AUTOMATIC] mode.\n");
+            }
         }
-    }
 
-    if (get_button_state(button_Pump) == BUTTON_PRESSED) {
-        if (system_Config->mode == SYSTEM_MODE_MANUAL) {
-            pump_control(pump_Controller1, PUMP_ON); // Activate pump in manual mode
-            wait(PUMP_WAIT_TIME); // Wait for pump operation
-            pump_control(pump_Controller1, PUMP_OFF); // Deactivate pump after wait time
+        if (get_button_state(button_Pump) == BUTTON_PRESSED) {
+            if (system_Config->mode == SYSTEM_MODE_MANUAL) {
+                pump_control(pump_Controller1, PUMP_ON); // Activate pump in manual mode
+                wait(PUMP_WAIT_TIME); // Wait for pump operation
+                pump_control(pump_Controller1, PUMP_OFF); // Deactivate pump after wait time
+            }
         }
     }
 }
@@ -166,6 +169,8 @@ int main()
     printf("Current timestamp: %ld\n", sensor_Time_Stamp);
 
     initialize_system();
+    pthread_t thread;
+    pthread_create(&thread, NULL, handle_button_press, NULL);
 
     while (1)
     {
@@ -186,7 +191,7 @@ int main()
         if (system_Config->mode == SYSTEM_MODE_MANUAL) {
             printf("System is in manual mode. Waiting for button press...\n");
             // Here you would typically wait for a button press to change the state
-            // For example: if (button->buttonState == BUTTON_PRESSED) { ... }
+            // For example: if (button->button_state == BUTTON_PRESSED) { ... }
         }
         else if (system_Config->mode == SYSTEM_MODE_AUTO) {
             printf("System is in automatic mode. \n");
@@ -200,11 +205,12 @@ int main()
             }
         }
 
-        handle_button_press();
         handle_LED();
 
         wait(1);
     }
+
+    pthread_join(thread, NULL);
 
     return 0; 
 }

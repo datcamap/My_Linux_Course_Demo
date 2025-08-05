@@ -7,13 +7,16 @@ SRCS = 	main.c\
 		$(wildcard sensor/*.c) \
 		$(wildcard system_config/*.c)
 
-TARGET = ../bin/1-Variable_and_Data_Types
+TARGET_DEBUG = ../bin/Variable_and_Data_Types_Debug
+TARGET_RELEASE = ../bin/Variable_and_Data_Types_Release
 
 all_debug:
-	$(CC) $(CFLAGS_DEBUG) -o $(TARGET) $(SRCS)
+	$(CC) $(CFLAGS_DEBUG) -o $(TARGET_DEBUG) $(SRCS)
 
 all_release:
-	$(CC) $(CFLAGS_RELEASE) -o $(TARGET) $(SRCS)
+	$(CC) $(CFLAGS_RELEASE) -o $(TARGET_RELEASE) $(SRCS)
+
+all: all_debug all_release
 
 clean:
 	rm -f $(TARGET)

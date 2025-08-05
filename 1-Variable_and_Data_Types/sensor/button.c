@@ -13,7 +13,7 @@
  * @return `BUTTON_PRESSED` if input is available on stdin,
  *         `BUTTON_NOT_PRESSED` otherwise.
  */
-ButtonState_t kbhit(void) {
+button_state_t kbhit(void) {
     struct timeval tv = {0L, 0L};
     fd_set fds;
     FD_ZERO(&fds);
@@ -32,8 +32,8 @@ Button_t *create_button(uint8_t buttonID, uint8_t button_GPIO)
 {
     Button_t *button = (Button_t *)malloc(sizeof(Button_t));
     if (button != NULL) {
-        button->buttonState = BUTTON_UNKNOWN;
-        button->buttonID = buttonID;
+        button->button_state = BUTTON_UNKNOWN;
+        button->button_ID = buttonID;
         button->button_GPIO = button_GPIO;
     }
     return button;
@@ -48,22 +48,22 @@ Button_t *create_button(uint8_t buttonID, uint8_t button_GPIO)
  * @param[in] button  Pointer to the button object.
  * @return Current state of the button: `BUTTON_PRESSED`, `BUTTON_NOT_PRESSED`, or `BUTTON_UNKNOWN`.
  */
-ButtonState_t get_button_state(Button_t *const button)
+button_state_t get_button_state(Button_t *const button)
 {
     if (NULL == button) {
         return BUTTON_UNKNOWN;
     }
     if (kbhit() == BUTTON_PRESSED) {
         char c = getchar(); // Read the pressed key
-        if (c == (char)button->buttonID) {
-            button->buttonState = BUTTON_PRESSED; // Update button state if the correct key is pressed
-            printf("\nButton ---[%c]--- is pressed \n\n", (char)button->buttonID);
+        if (c == (char)button->button_ID) {
+            button->button_state = BUTTON_PRESSED; // Update button state if the correct key is pressed
+            printf("\nButton ---[%c]--- is pressed \n\n", (char)button->button_ID);
         }
     }
     else {
-        button->buttonState = BUTTON_NOT_PRESSED; // Reset state if wrong key
+        button->button_state = BUTTON_NOT_PRESSED; // Reset state if wrong key
     }
-    return button->buttonState;
+    return button->button_state;
 }
 
 /**
@@ -73,7 +73,7 @@ ButtonState_t get_button_state(Button_t *const button)
  */
 void destroy_button(Button_t *button)
 {
-    if (NULL != button) {
+    if (button != NULL) {
         free(button);
     }
 }
