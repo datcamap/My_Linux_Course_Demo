@@ -39,6 +39,8 @@ time_t inform_time_stamp = 0;
 time_t wait_time_stamp = 0;
 float moisture = 0.0f;
 
+// abcd
+
 void initialize_system()
 {
     // Create system configuration
