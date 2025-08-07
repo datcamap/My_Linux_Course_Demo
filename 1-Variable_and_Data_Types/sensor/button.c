@@ -1,8 +1,4 @@
 #include "button.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/select.h>
 
 /**
  * @brief Non-blocking check for keyboard input.
@@ -26,11 +22,11 @@ button_state_t kbhit(void) {
  *
  * @param[in] buttonID     Button identifier.
  * @param[in] button_GPIO  GPIO pin number.
- * @return Pointer to `Button_t`, or NULL on failure.
+ * @return Pointer to `button_t`, or NULL on failure.
  */
-Button_t *create_button(uint8_t buttonID, uint8_t button_GPIO)
+button_t *create_button(uint8_t buttonID, uint8_t button_GPIO)
 {
-    Button_t *button = (Button_t *)malloc(sizeof(Button_t));
+    button_t *button = (button_t *)malloc(sizeof(button_t));
     if (button != NULL) {
         button->button_state = BUTTON_UNKNOWN;
         button->button_ID = buttonID;
@@ -48,7 +44,7 @@ Button_t *create_button(uint8_t buttonID, uint8_t button_GPIO)
  * @param[in] button  Pointer to the button object.
  * @return Current state of the button: `BUTTON_PRESSED`, `BUTTON_NOT_PRESSED`, or `BUTTON_UNKNOWN`.
  */
-button_state_t get_button_state(Button_t *const button)
+button_state_t get_button_state(button_t *const button)
 {
     if (NULL == button) {
         return BUTTON_UNKNOWN;
@@ -71,7 +67,7 @@ button_state_t get_button_state(Button_t *const button)
  *
  * @param[in] button  Pointer to the button object to be destroyed.
  */
-void destroy_button(Button_t *button)
+void destroy_button(button_t *button)
 {
     if (button != NULL) {
         free(button);

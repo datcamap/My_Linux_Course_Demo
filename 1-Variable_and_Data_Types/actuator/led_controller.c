@@ -1,27 +1,27 @@
-#include "LED_controller.h"
+#include "led_controller.h"
 #include <stdlib.h>
 #include <stdio.h>
 
 /**
  * @brief Creates and initializes an LED controller object.
  *
- * This function allocates memory for an `LED_Controller_t` object,
+ * This function allocates memory for an `led_controller_t` object,
  * assigns the provided parameters to the structure fields, and
  * sets the initial LED state to `LED_UNKNOWN`.
  *
  * @param[in]  led_ID     Identifier for the LED.
  * @param[in]  led_GPIO  GPIO pin number used to control the LED.
  *
- * @return Pointer to the initialized `LED_Controller_t` object if successful, 
+ * @return Pointer to the initialized `led_controller_t` object if successful, 
  *         or NULL if memory allocation fails.
  */
-LED_Controller_t *create_LED_controller(uint8_t led_ID, uint8_t led_GPIO)
+led_controller_t *create_led_controller(uint8_t led_ID, uint8_t led_GPIO)
 {
-    LED_Controller_t *led = (LED_Controller_t *)malloc(sizeof(LED_Controller_t));
-    if (led) {
-        led->led_ID = led_ID;
-        led->led_GPIO = led_GPIO;
-        led->led_state = LED_UNKNOWN;
+    led_controller_t *led = (led_controller_t *)malloc(sizeof(led_controller_t));
+    if (led != NULL) {
+        led->id = led_ID;
+        led->gpio = led_GPIO;
+        led->state = LED_UNKNOWN;
     }
     return led;
 }
@@ -32,7 +32,7 @@ LED_Controller_t *create_LED_controller(uint8_t led_ID, uint8_t led_GPIO)
  * @param[in]  led  Pointer to the LED controller.
  * @return LED state, or `LED_UNKNOWN` if input is NULL.
  */
-LED_State_t get_LED_state(LED_Controller_t *const led)
+led_state_t get_led_state(led_controller_t *const led)
 {
     if (!led) {
         return LED_UNKNOWN; // Return unknown state if LED is NULL
@@ -49,7 +49,7 @@ LED_State_t get_LED_state(LED_Controller_t *const led)
  * @param[in]  led    Pointer to the LED controller.
  * @param[in]  state  The desired state for the LED.
  */
-void set_LED_state(LED_Controller_t *led, LED_State_t state)
+void set_led_state(led_controller_t *led, led_state_t state)
 {
     if (NULL != led) {
         led->led_state = state; 
@@ -61,11 +61,11 @@ void set_LED_state(LED_Controller_t *led, LED_State_t state)
 /**
  * @brief Frees the memory allocated for the LED controller.
  *
- * This function deallocates the memory used by the `LED_Controller_t` object.
+ * This function deallocates the memory used by the `led_controller_t` object.
  *
  * @param[in]  led  Pointer to the LED controller to be destroyed.
  */
-void destroy_LED_controller(LED_Controller_t *led)
+void destroy_led_controller(led_controller_t *led)
 {
     if (led) {
         free(led); // Free the allocated memory for the LED controller

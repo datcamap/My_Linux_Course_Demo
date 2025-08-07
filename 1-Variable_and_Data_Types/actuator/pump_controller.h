@@ -1,19 +1,23 @@
+#ifndef PUMP_CONTROLLER_H
+#define PUMP_CONTROLLER_H
+
 #include <stdint.h>
 
-// Define the PumpState_t enum to represent the state of the pump
-typedef enum PumpState {
+typedef enum pump_state {
     PUMP_OFF,
     PUMP_ON,
     PUMP_UNKNOWN
-} PumpState_t;
+} pump_state_t;
 
-typedef struct Pump_Control {
-    uint8_t pump_ID;        // Unique identifier for the pump
-    uint8_t pump_GPIO;     // GPIO pin number for the pump
-    uint8_t pump_state;     // State of the pump ref: PumpState_t
-} Pump_Control_t;
+typedef struct pump_control {
+    uint8_t id;
+    uint8_t gpio;
+    pump_state_t state;
+} pump_control_t;
 
-Pump_Control_t *create_pump_control(uint8_t pumpID, uint8_t pump_GPIO);
-PumpState_t get_pump_state(Pump_Control_t *const pump);
-void pump_control(Pump_Control_t *pump, PumpState_t state);
-void destroy_pump_control(Pump_Control_t *pump);
+pump_control_t *create_pump_control(uint8_t pump_id, uint8_t pump_pin);
+pump_state_t get_pump_state(pump_control_t *const pump);
+void pump_control(pump_control_t *pump, pump_state_t pump_state_value);
+void destroy_pump_control(pump_control_t *pump);
+
+#endif // PUMP_CONTROLLER_H

@@ -15,9 +15,9 @@
  * @return Pointer to the initialized `PumpControl_t` object if successful, 
  *         or NULL if memory allocation fails.
  */
-Pump_Control_t *create_pump_control(uint8_t pumpID, uint8_t pump_GPIO)
+pump_control_t *create_pump_control(uint8_t pumpID, uint8_t pump_GPIO)
 {
-    Pump_Control_t *pump = (Pump_Control_t *)malloc(sizeof(Pump_Control_t));
+    pump_control_t *pump = (pump_control_t *)malloc(sizeof(pump_control_t));
     if (pump) {
         pump->pump_ID = pumpID;
         pump->pump_GPIO = pump_GPIO;
@@ -32,7 +32,7 @@ Pump_Control_t *create_pump_control(uint8_t pumpID, uint8_t pump_GPIO)
  * @param[in]  pump  Pointer to the pump control.
  * @return Pump state, or `PUMP_UNKNOWN` if input is NULL.
  */
-PumpState_t get_pump_state(Pump_Control_t *const pump)
+pump_state_t get_pump_state(pump_control_t *const pump)
 {
     if (!pump) {
         return PUMP_UNKNOWN; // Return unknown state if pump is NULL
@@ -49,7 +49,7 @@ PumpState_t get_pump_state(Pump_Control_t *const pump)
  * @param[in]  pump   Pointer to the pump control.
  * @param[in]  state  The desired state for the pump.
  */
-void pump_control(Pump_Control_t *pump, PumpState_t state)
+void pump_control(pump_control_t *pump, pump_state_t state)
 {
     if (pump) {
         pump->pump_state = state; // Set the pump state
@@ -65,7 +65,7 @@ void pump_control(Pump_Control_t *pump, PumpState_t state)
  *
  * @param[in]  pump  Pointer to the pump control to be destroyed.
  */
-void destroy_pump_control(Pump_Control_t *pump)
+void destroy_pump_control(pump_control_t *pump)
 {
     if (pump != NULL) {
         free(pump); // Free the allocated memory for the pump

@@ -1,6 +1,10 @@
 #ifndef BUTTON_H
 #define BUTTON_H
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/select.h>
 #include <stdint.h>
 
 // Define the button_state_t enum to represent the state of the pump
@@ -10,14 +14,14 @@ typedef enum button_state {
     BUTTON_UNKNOWN
 }button_state_t;
 
-typedef struct {
-    uint8_t button_ID;   // Unique identifier for the button
-    uint8_t button_GPIO; // GPIO pin number for the button
-    button_state_t button_state; // State of the button ref: button_state_t
-} Button_t;
+typedef struct button {
+    uint8_t id;
+    uint8_t pin;
+    button_state_t button_state;
+} button_t;
 
-Button_t *create_button(uint8_t buttonID, uint8_t button_GPIO);
-button_state_t get_button_state(Button_t *const button);
-void destroy_button(Button_t *button);
+button_t *create_button(uint8_t button_id, uint8_t button_pin);
+button_state_t get_button_state(button_t *const button);
+void destroy_button(button_t *button);
 
 #endif // BUTTON_H

@@ -5,7 +5,7 @@
 #include <sys/select.h>
 #include <string.h>
 
-#define PROCESSING_PERIOD 10 // seconds
+#define PROCESSING_PERIOD 10
 
 typedef struct TaskNode {
     char task_description[50];

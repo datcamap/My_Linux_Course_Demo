@@ -1,11 +1,18 @@
+#ifndef moisture_sensor_H
+#define moisture_sensor_H
+
+#include <stdio.h>
+#include <stdlib.h>
 #include <stdint.h>
 
-typedef struct Moisture_Sensor {
-    float moisture;
-    uint8_t sensor_ID;
-    uint8_t sensor_GPIO;
-} Moisture_Sensor_t;
+typedef struct moisture_sensor {
+    float value;
+    uint8_t id;
+    uint8_t gpio;
+} moisture_sensor_t;
 
-Moisture_Sensor_t *create_moisture_sensor(uint8_t sensorID, uint8_t sensor_GPIO);
-float get_sensor_data(Moisture_Sensor_t *const sensor);
-void destroy_moisture_sensor(Moisture_Sensor_t* sensor);
+moisture_sensor_t *create_moisture_sensor(uint8_t sensor_id, uint8_t sensor_gpio);
+float get_sensor_data(moisture_sensor_t *const sensor);
+void destroy_moisture_sensor(moisture_sensor_t* sensor);
+
+#endif // moisture_sensor_H

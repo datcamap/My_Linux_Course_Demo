@@ -1,7 +1,7 @@
 #include "system_config.h"
 #include <stdlib.h>
 
-static System_Config_t *config_instance = NULL;
+static system_config_t *config_instance = NULL;
 
 /**
  * @brief Gets the current system configuration.
@@ -11,13 +11,13 @@ static System_Config_t *config_instance = NULL;
  *
  * @return Pointer to the current system configuration.
  */
-System_Config_t *get_system_config(void)
+system_config_t *get_system_config(void)
 {
     if (config_instance != NULL) {
         return config_instance; // Return the current system configuration
     }
-    config_instance = (System_Config_t *)malloc(sizeof(System_Config_t));
-    update_system_config(SYSTEM_MODE_AUTO, 0.0f, 0.0f, 0, 0, 0); // Initialize with default values
+    config_instance = (system_config_t *)malloc(sizeof(system_config_t));
+    update_system_config(system_mode_AUTO, 0.0f, 0.0f, 0, 0, 0); // Initialize with default values
     return config_instance;
 }
 
@@ -34,7 +34,7 @@ System_Config_t *get_system_config(void)
  * @param[in] informing The informing interval to set in seconds.
  * @return Pointer to the updated system configuration.
  */
-System_Config_t *update_system_config( System_Mode_t sys_mode, 
+system_config_t *update_system_config( system_mode_t sys_mode, 
                                     float moisture_thresholdMIN, 
                                     float moisture_thresholdMAX, 
                                     uint32_t pump_wait, 
@@ -59,7 +59,7 @@ System_Config_t *update_system_config( System_Mode_t sys_mode,
  *
  * @param config Pointer to the system configuration to be destroyed.
  */
-void destroy_system_config(System_Config_t *config)
+void destroy_system_config(system_config_t *config)
 {
     if (config != NULL) {
         free(config); // Free the allocated memory for the system configuration
