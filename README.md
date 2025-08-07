@@ -45,6 +45,11 @@
 - Declaration (khai báo): Thông báo cho compiler về sự tồn tại của biến hoặc hàm (function prototype)
 - Definition (định nghĩa): Cấp phát bộ nhớ cho biến bằng việc khởi tạo giá trị, hoặc là cung cấp mã thực thi cho hàm (phần thân hàm)
 
+### Static keyword:
+
+- Các biến global được mặc định có từ khoá static
+- Các hàm có từ khoá static thì chỉ được gọi từ các hàm ở trong cùng 1 file
+
 ### Extern keyword:
 
 - Khai báo rằng biến hoặc hàm đã được định nghĩa ở một nơi khác

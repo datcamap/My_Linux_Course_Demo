@@ -35,6 +35,8 @@ TaskNode_t* queue_get_next_task(void);
 void print_task_queue(void);
 void history_log_activity(const char* entry);
 void history_navigate(void);
+void process_tasks(void);
+void process_input(void);
 
 int main() {
     procesing_time_stamp = time(NULL);
@@ -44,32 +46,10 @@ int main() {
     {
         if (time(NULL) - procesing_time_stamp >= PROCESSING_PERIOD) {
             procesing_time_stamp = time(NULL);
-            TaskNode_t* task = queue_get_next_task();
-            if (task != NULL) {
-                history_log_activity(task->task_description);
-                free(task);
-            }
+            process_tasks();
         }
-        
         if (kbhit() != 0) {
-            char input = getchar();
-            getchar(); // Consume the newline character
-            if (input == 'h') {
-                history_navigate();
-            }
-            else if (input == 'a') {
-                char task_input[50];
-                printf("Enter task description: ");
-                fgets(task_input, sizeof(task_input), stdin);
-                task_input[strcspn(task_input, "\n")] = '\0'; // Remove newline character
-                queue_add_task(task_input);
-            }
-            else if (input == 't') {
-                print_task_queue();
-            }
-            else {
-                printf("Invalid input.\n\t-a: add task\n\t-h: history navigator\n\t-t: print task queue\n");
-            }
+            process_input();
         }
     }
     
@@ -193,5 +173,36 @@ void history_navigate(void)
                 printf("Invalid command.\n\t-n: next entry\n\t-p: previous entry\n\t-q: quit navigation\n");
             }
         }
+    }
+}
+
+void process_tasks(void)
+{
+    TaskNode_t* task = queue_get_next_task();
+    if (task != NULL) {
+        history_log_activity(task->task_description);
+        free(task);
+    }
+}
+
+void process_input(void)
+{
+    char input = getchar();
+    getchar(); // Consume the newline character
+    if (input == 'h') {
+        history_navigate();
+    }
+    else if (input == 'a') {
+        char task_input[50];
+        printf("Enter task description (50 characters max): ");
+        fgets(task_input, sizeof(task_input), stdin);
+        task_input[strcspn(task_input, "\n")] = '\0'; // Remove newline character
+        queue_add_task(task_input);
+    }
+    else if (input == 't') {
+        print_task_queue();
+    }
+    else {
+        printf("Invalid input.\n\t-a: add task\n\t-h: history navigator\n\t-t: print task queue\n");
     }
 }

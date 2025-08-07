@@ -163,6 +163,17 @@ void handle_LED()
     }
 }
 
+void automatic_mode()
+{
+    if (moisture < system_Config->moisture_threshold_MIN) {
+        printf("Moisture level is below minimum threshold. Activating pump...\n");
+        pump_control(pump_Controller1, PUMP_ON); // Activate pump
+    } else if (moisture > system_Config->moisture_threshold_MAX) {
+        printf("Moisture level is sufficient. Pump remains off.\n");
+        pump_control(pump_Controller1, PUMP_OFF); // Deactivate pump
+    }
+}
+
 int main()
 {
     sensor_Time_Stamp = time(NULL);
@@ -190,19 +201,10 @@ int main()
 
         if (system_Config->mode == SYSTEM_MODE_MANUAL) {
             printf("System is in manual mode. Waiting for button press...\n");
-            // Here you would typically wait for a button press to change the state
-            // For example: if (button->button_state == BUTTON_PRESSED) { ... }
         }
         else if (system_Config->mode == SYSTEM_MODE_AUTO) {
             printf("System is in automatic mode. \n");
-            // Check if the moisture level is below the minimum threshold
-            if (moisture < system_Config->moisture_threshold_MIN) {
-                printf("Moisture level is below minimum threshold. Activating pump...\n");
-                pump_control(pump_Controller1, PUMP_ON); // Activate pump
-            } else if (moisture > system_Config->moisture_threshold_MAX) {
-                printf("Moisture level is sufficient. Pump remains off.\n");
-                pump_control(pump_Controller1, PUMP_OFF); // Deactivate pump
-            }
+            automatic_mode();
         }
 
         handle_LED();
