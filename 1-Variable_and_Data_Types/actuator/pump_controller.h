@@ -2,6 +2,8 @@
 #define PUMP_CONTROLLER_H
 
 #include <stdint.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 typedef enum pump_state {
     PUMP_OFF,

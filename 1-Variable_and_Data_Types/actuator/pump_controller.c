@@ -1,6 +1,4 @@
 #include "pump_controller.h"
-#include <stdlib.h>
-#include <stdio.h>
 
 /**
  * @brief Creates and initializes a pump control object.
@@ -15,13 +13,14 @@
  * @return Pointer to the initialized `PumpControl_t` object if successful, 
  *         or NULL if memory allocation fails.
  */
-pump_control_t *create_pump_control(uint8_t pumpID, uint8_t pump_GPIO)
+pump_control_t *create_pump_control(uint8_t pump_id, uint8_t pump_gpio)
 {
     pump_control_t *pump = (pump_control_t *)malloc(sizeof(pump_control_t));
-    if (pump) {
-        pump->pump_ID = pumpID;
-        pump->pump_GPIO = pump_GPIO;
-        pump->pump_state = PUMP_OFF; // Initialize pump state to off
+    if (pump != NULL) {
+        pump->id = pump_id;
+        pump->gpio = pump_gpio;
+        pump->state = PUMP_OFF;
+        pump_control(pump, PUMP_OFF);
     }
     return pump;
 }
@@ -34,10 +33,10 @@ pump_control_t *create_pump_control(uint8_t pumpID, uint8_t pump_GPIO)
  */
 pump_state_t get_pump_state(pump_control_t *const pump)
 {
-    if (!pump) {
+    if (pump != NULL) {
         return PUMP_UNKNOWN; // Return unknown state if pump is NULL
     }
-    return pump->pump_state;
+    return pump->state;
 }
 
 /**
@@ -49,12 +48,12 @@ pump_state_t get_pump_state(pump_control_t *const pump)
  * @param[in]  pump   Pointer to the pump control.
  * @param[in]  state  The desired state for the pump.
  */
-void pump_control(pump_control_t *pump, pump_state_t state)
+void pump_control(pump_control_t *pump, pump_state_t pump_state)
 {
-    if (pump) {
-        pump->pump_state = state; // Set the pump state
-        printf("Pump ID: %d, State: %s\n", pump->pump_ID,
-               (state == PUMP_ON) ? "ON" : (state == PUMP_OFF) ? "OFF" : "UNKNOWN");
+    if (pump != NULL) {
+        pump->state = pump_state; 
+        printf("Pump ID: %d, State: %s\n", pump->id,
+               (pump->state == PUMP_ON) ? "ON" : (pump->state == PUMP_OFF) ? "OFF" : "UNKNOWN");
     }
 }
 

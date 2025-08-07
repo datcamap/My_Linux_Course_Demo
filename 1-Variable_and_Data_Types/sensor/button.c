@@ -20,17 +20,17 @@ button_state_t kbhit(void) {
 /**
  * @brief Initializes a button object.
  *
- * @param[in] buttonID     Button identifier.
- * @param[in] button_GPIO  GPIO pin number.
+ * @param[in] button_id     Button identifier.
+ * @param[in] button_pin    GPIO pin number.
  * @return Pointer to `button_t`, or NULL on failure.
  */
-button_t *create_button(uint8_t buttonID, uint8_t button_GPIO)
+button_t *create_button(uint8_t button_id, uint8_t button_pin)
 {
     button_t *button = (button_t *)malloc(sizeof(button_t));
     if (button != NULL) {
-        button->button_state = BUTTON_UNKNOWN;
-        button->button_ID = buttonID;
-        button->button_GPIO = button_GPIO;
+        button->state = BUTTON_UNKNOWN;
+        button->id = button_id;
+        button->pin = button_pin;
     }
     return button;
 }
@@ -51,15 +51,15 @@ button_state_t get_button_state(button_t *const button)
     }
     if (kbhit() == BUTTON_PRESSED) {
         char c = getchar(); // Read the pressed key
-        if (c == (char)button->button_ID) {
-            button->button_state = BUTTON_PRESSED; // Update button state if the correct key is pressed
-            printf("\nButton ---[%c]--- is pressed \n\n", (char)button->button_ID);
+        if (c == (char)button->id) {
+            button->state = BUTTON_PRESSED; // Update button state if the correct key is pressed
+            printf("\nButton ---[%c]--- is pressed \n\n", (char)button->id);
         }
     }
     else {
-        button->button_state = BUTTON_NOT_PRESSED; // Reset state if wrong key
+        button->state = BUTTON_NOT_PRESSED; // Reset state if wrong key
     }
-    return button->button_state;
+    return button->state;
 }
 
 /**

@@ -4,12 +4,10 @@
 #include <stdint.h>
 #include <stdio.h>
 
-typedef struct LED_strip {
+typedef struct led_strip {
     size_t pixels;
     uint32_t *led_buffer;
-} LED_strip_t;
-
-static LED_strip_t led_strip = {0, NULL};
+} led_strip_t;
 
 int led_init(size_t num_pixels);
 void led_shutdown();

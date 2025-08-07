@@ -17,7 +17,7 @@ typedef enum button_state {
 typedef struct button {
     uint8_t id;
     uint8_t pin;
-    button_state_t button_state;
+    button_state_t state;
 } button_t;
 
 button_t *create_button(uint8_t button_id, uint8_t button_pin);

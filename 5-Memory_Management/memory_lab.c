@@ -4,7 +4,7 @@
 #include <string.h>
 
 uint32_t create_stack_overflow_by_recusion(uint32_t depth) {
-    char* buffer[depth]; // Allocate a buffer to simulate stack usage
+    char* buffer[depth] __attribute_maybe_unused__;
     printf("Recursion depth: %u\n", depth);    
     return create_stack_overflow_by_recusion(depth + 1);
 }

@@ -17,7 +17,7 @@ system_config_t *get_system_config(void)
         return config_instance; // Return the current system configuration
     }
     config_instance = (system_config_t *)malloc(sizeof(system_config_t));
-    update_system_config(system_mode_AUTO, 0.0f, 0.0f, 0, 0, 0); // Initialize with default values
+    update_system_config(SYSTEM_MODE_AUTO, 0.0f, 0.0f, 0, 0, 0); // Initialize with default values
     return config_instance;
 }
 
@@ -26,12 +26,12 @@ system_config_t *get_system_config(void)
  *
  * If the configuration instance is not initialized, it will be created.
  *
- * @param[in] sys_mode The system mode to set.
- * @param[in] moisture_thresholdMIN The minimum moisture threshold to set.
- * @param[in] moisture_thresholdMAX The maximum moisture threshold to set.
- * @param[in] pump_wait The pump wait time to set in seconds.
- * @param[in] sensor_read The sensor read interval to set in seconds.
- * @param[in] informing The informing interval to set in seconds.
+ * @param[in] sys_mode                  The system mode to set.
+ * @param[in] moisture_thresholdMIN     The minimum moisture threshold to set.
+ * @param[in] moisture_thresholdMAX     The maximum moisture threshold to set.
+ * @param[in] pump_wait                 The pump wait time to set in seconds.
+ * @param[in] sensor_read               The sensor read interval to set in seconds.
+ * @param[in] informing                 The informing interval to set in seconds.
  * @return Pointer to the updated system configuration.
  */
 system_config_t *update_system_config( system_mode_t sys_mode, 
@@ -42,12 +42,12 @@ system_config_t *update_system_config( system_mode_t sys_mode,
                                     uint32_t informing)
 {
     if (config_instance != NULL) {
-        config_instance->mode = sys_mode; // Initialize system mode
-        config_instance->moisture_threshold_MIN = moisture_thresholdMIN; // Set minimum moisture threshold
-        config_instance->moisture_threshold_MAX = moisture_thresholdMAX; // Set maximum moisture threshold
-        config_instance->pump_wait_time = pump_wait; // Set pump wait time
-        config_instance->sensor_read_interval = sensor_read; // Set sensor read interval
-        config_instance->informing_interval = informing; // Set sensor read interval
+        config_instance->mode = sys_mode;
+        config_instance->moisture_threshold_min = moisture_thresholdMIN;
+        config_instance->moisture_threshold_max = moisture_thresholdMAX;
+        config_instance->pump_wait_time = pump_wait;
+        config_instance->reading_interval = sensor_read;
+        config_instance->informing_interval = informing;
     }
     return config_instance;
 }

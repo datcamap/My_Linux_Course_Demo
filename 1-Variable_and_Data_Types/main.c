@@ -22,7 +22,7 @@
 #define PUMP            (GPIO(6))   // Pump control GPIO pin
 #define STATE_BUTTON    (GPIO(7))   // Button to switch system mode
 #define PUMP_BUTTON     (GPIO(8))   // Button to turn pump on/ off in manual mode
-#define STATE_LED       (GPIO(9))   // LED to inform system current mode
+#define STATE_LED       (GPIO(9))   // LED to inform system current mode, LED on Auto mode, LED off Manual mode
 #define PUMP_LED        (GPIO(10))  // LED to indicate pump activation state
 #define WARNING_LED     (GPIO(11))  // LED warning in case of errors occur
 
@@ -36,39 +36,36 @@ led_controller_t *led_pump = NULL;
 led_controller_t *led_warning = NULL;
 time_t sensor_time_stamp = 0;
 time_t inform_time_stamp = 0;
-time_t wait_time_stamp = 0;
 float moisture = 0.0f;
-
-// abcd
 
 void initialize_system()
 {
-    // Create system configuration
-    system_config = get_system_config();
-    system_config = update_system_config(system_mode_AUTO, 
+    /* Create system configuration */
+    sys_config = get_system_config();
+    sys_config = update_system_config( SYSTEM_MODE_AUTO, 
                                        MOISTURE_THRESHOLD_MIN, 
                                        MOISTURE_THRESHOLD_MAX, 
                                        PUMP_WAIT_TIME, 
                                        SENSOR_READ_INTERVAL,
                                        INFORMING_INTERVAL);
-    if (NULL == system_config) {
+    if (NULL == sys_config) {
         printf("Failed to create system configuration.\n");
     }
     else {
         printf("System configuration created successfully.\n");
     }
 
-    // Create moisture sensor
-    moisture_sensor = create_moisture_sensor(1, moisture_sensor_GPIO);
-    if (NULL == moisture_sensor) {
+    /* Create moisture sensor */
+    moist_sensor = create_moisture_sensor(1, MOISTURE);
+    if (NULL == moist_sensor) {
         printf("Failed to create moisture sensor.\n");
     }
     else {
         printf("Moisture sensor created successfully.\n");
     }
 
-    // Create pump control
-    pump_ctrl_1 = create_pump_control(1, PUMP_GPIO);
+    /* Create pump control */
+    pump_ctrl_1 = create_pump_control(1, PUMP);
     if (NULL == pump_ctrl_1) {
         printf("Failed to create pump control.\n");
     }
@@ -76,89 +73,87 @@ void initialize_system()
         printf("Pump control created successfully.\n");
     }
 
-    // Create button
-    button_Mode = create_button((uint8_t)'m', STATE_BUTTON_GPIO);
-    if (NULL == button_Mode) {
+    /* Create buttons */
+    button_status = create_button((uint8_t)'m', STATE_BUTTON);
+    if (NULL == button_status) {
         printf("Failed to create button.\n");
     }
     else {
         printf("Button created successfully.\n");
     }
 
-    button_Pump = create_button((uint8_t)'p', PUMP_BUTTON_GPIO);
-    if (NULL == button_Pump) {
+    button_pump = create_button((uint8_t)'p', PUMP_BUTTON);
+    if (NULL == button_pump) {
         printf("Failed to create button.\n");
     }
     else {
         printf("Button created successfully.\n");
     }
 
-    // Create LED controller
-    led_status = create_led_controller((uint8_t)'M', STATE_LED_GPIO);
+    /* Create LED controllers */
+    led_status = create_led_controller((uint8_t)'M', STATE_LED);
     if (NULL == led_status) {
         printf("Failed to create LED controller.\n");
     }
     else {
-        printf("LED controller %d created successfully.\n", led_status->led_ID);
+        printf("LED controller %d created successfully.\n", led_status->id);
     }
     
-    led_pump = create_led_controller((uint8_t)'P', STATE_LED_GPIO);
+    led_pump = create_led_controller((uint8_t)'P', STATE_LED);
     if (NULL == led_status) {
         printf("Failed to create LED controller.\n");
     }
     else {
-        printf("LED controller %d created successfully.\n", led_pump->led_ID);
+        printf("LED controller %d created successfully.\n", led_pump->id);
     }
     
-    led_warning = create_led_controller((uint8_t)'W', STATE_LED_GPIO);
+    led_warning = create_led_controller((uint8_t)'W', STATE_LED);
     if (NULL == led_status) {
         printf("Failed to create LED controller.\n");
     }
     else {
-        printf("LED controller %d created successfully.\n", led_warning->led_ID);
+        printf("LED controller %d created successfully.\n", led_warning->id);
     }
 }
 
 void wait(uint32_t seconds)
 {
-    // Simulate waiting for a specified number of seconds
     printf("Waiting for %u seconds...\n", seconds);
-    wait_time_stamp = time(NULL);
+    time_t wait_time_stamp = time(NULL);
     while (time(NULL) - wait_time_stamp < seconds);
 }
 
-void* handle_button_press(void *arg)
+void* handle_button_press(void *arg __attribute__((unused)))
 {
     while (1) {
-        // Simulate button press handling
-        if (get_button_state(button_Mode) == BUTTON_PRESSED) {
-            if (system_config->mode == system_mode_AUTO) {
-                system_config->mode = system_mode_MANUAL;
+        if (get_button_state(button_status) == BUTTON_PRESSED) {
+            if (sys_config->mode == SYSTEM_MODE_AUTO) {
+                sys_config->mode = SYSTEM_MODE_MANUAL;
                 pump_control(pump_ctrl_1, PUMP_OFF);
                 printf("Switched to [MANUAL] mode.\n");
             } 
-            else if (system_config->mode == system_mode_MANUAL) {
-                system_config->mode = system_mode_AUTO;
+            else if (sys_config->mode == SYSTEM_MODE_MANUAL) {
+                sys_config->mode = SYSTEM_MODE_AUTO;
                 printf("Switched to [AUTOMATIC] mode.\n");
             }
         }
 
-        if (get_button_state(button_Pump) == BUTTON_PRESSED) {
-            if (system_config->mode == system_mode_MANUAL) {
-                pump_control(pump_ctrl_1, PUMP_ON); // Activate pump in manual mode
-                wait(PUMP_WAIT_TIME); // Wait for pump operation
-                pump_control(pump_ctrl_1, PUMP_OFF); // Deactivate pump after wait time
+        if (get_button_state(button_pump) == BUTTON_PRESSED) {
+            if (sys_config->mode == SYSTEM_MODE_MANUAL) {
+                pump_control(pump_ctrl_1, PUMP_ON);
+                wait(PUMP_WAIT_TIME);
+                pump_control(pump_ctrl_1, PUMP_OFF);
             }
         }
     }
 }
 
-void handle_LED()
+void handle_led()
 {
     // Simulate LED handling based on system state
-    if (sys_config->mode == system_mode_AUTO) {
+    if (sys_config->mode == SYSTEM_MODE_AUTO) {
         set_led_state(led_status, LED_ON); // Turn on LED in auto mode
-    } else if (sys_config->mode == system_mode_MANUAL) {
+    } else if (sys_config->mode == SYSTEM_MODE_MANUAL) {
         set_led_state(led_status, LED_OFF); // Turn off LED in manual mode
     }
 
@@ -172,10 +167,10 @@ void handle_LED()
 
 void automatic_mode()
 {
-    if (moisture < sys_config->moisture_threshold_MIN) {
+    if (moisture < sys_config->moisture_threshold_min) {
         printf("Moisture level is below minimum threshold. Activating pump...\n");
         pump_control(pump_ctrl_1, PUMP_ON); // Activate pump
-    } else if (moisture > system_config->moisture_threshold_MAX) {
+    } else if (moisture > sys_config->moisture_threshold_max) {
         printf("Moisture level is sufficient. Pump remains off.\n");
         pump_control(pump_ctrl_1, PUMP_OFF); // Deactivate pump
     }
@@ -206,15 +201,15 @@ int main()
             printf("-------------- \n\n");
         }
 
-        if (sys_config->mode == system_mode_MANUAL) {
+        if (sys_config->mode == SYSTEM_MODE_MANUAL) {
             printf("System is in manual mode. Waiting for button press...\n");
         }
-        else if (sys_config->mode == system_mode_AUTO) {
+        else if (sys_config->mode == SYSTEM_MODE_AUTO) {
             printf("System is in automatic mode. \n");
             automatic_mode();
         }
 
-        handle_LED();
+        handle_led();
 
         wait(1);
     }

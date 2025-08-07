@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS_DEBUG = -Wall -Wextra -pedantic -g -I./actuator -I./sensor -I./system_config
 CFLAGS_RELEASE = -Wall -Wextra -pedantic -O3 -I./actuator -I./sensor -I./system_config
 
-SRCS = main.c\
+SRCS = 	main.c\
 		$(wildcard actuator/*.c) \
 		$(wildcard sensor/*.c) \
 		$(wildcard system_config/*.c)

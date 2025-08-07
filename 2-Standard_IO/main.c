@@ -24,13 +24,14 @@ int main()
 
     // Example usage of the logger
     LOG_MESSAGE(LOG_INFO, "This is an info message.");
-    LOG_MESSAGE(LOG_WARNING, "This is a warning message.");
+    LOG_MESSAGE(LOG_WARNING, "This is a warning message with arguments.");
     LOG_MESSAGE(LOG_ERROR, "This is an error message.");
     LOG_MESSAGE(LOG_DEBUG, "This is a debug message.");
 
     // Change log level to DEBUG
-    set_logLevel(LOG_DEBUG);
+    set_log_level(LOG_DEBUG);
     LOG_MESSAGE(LOG_DEBUG, "Debugging enabled.");
+    LOG_MESSAGE(LOG_INFO, "This is an info message.");
 
     return 0;
 }

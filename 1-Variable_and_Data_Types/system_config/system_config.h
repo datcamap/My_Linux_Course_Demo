@@ -4,9 +4,9 @@
 #include <stdint.h>
 
 typedef enum system_mode {
-    system_mode_AUTO,
-    system_mode_MANUAL,
-    system_mode_ERROR
+    SYSTEM_MODE_AUTO,
+    SYSTEM_MODE_MANUAL,
+    SYSTEM_MODE_ERROR
 } system_mode_t;
 
 typedef struct system_config {

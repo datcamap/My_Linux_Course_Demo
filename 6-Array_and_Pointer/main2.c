@@ -195,7 +195,7 @@ void process_input(void)
     else if (input == 'a') {
         char task_input[50];
         printf("Enter task description (50 characters max): ");
-        fgets(task_input, sizeof(task_input), stdin);
+        (void)fgets(task_input, sizeof(task_input), stdin);
         task_input[strcspn(task_input, "\n")] = '\0'; // Remove newline character
         queue_add_task(task_input);
     }
