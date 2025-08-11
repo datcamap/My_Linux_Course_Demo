@@ -6,43 +6,58 @@
 ### Con trỏ NULL
 NULL là một hằng số đặc biệt cho biết rằng một con trỏ đang không trỏ tới 1 địa chỉ cụ thể trong bộ nhớ
 
->
+```C
     int *pointer;
+```
 
 Nếu khi khởi tạo con trỏ mà không gán giá trị thì con trỏ sẽ mang 1 giá trị bất kì (con trỏ lúc này được gọi là wild pointer), việc tham chiếu ngược vào con trỏ này sẽ khiến chương trình có thể bị crash
 Cho nên con trỏ thường được khởi tạo với giá trị NULL nếu chưa được gán cho địa chỉ ô nhớ
 
->
+```C
     int *pointer = NULL;
-
+```
 
 ### Mảng
 - Tên mảng là 1 hằng con trỏ, constant pointer
 - Việc truy cập phần tử x trong mảng arr chính là offset con trỏ 1 lượng = x*(kích thước 1 phần tử trong mảng arr) sau đó tham chiếu ngược vào con trỏ đã offset
 
->
+```C
     arr[x] == *( arr + x*sizeof(arr[0]) )
+```
 
 ### Con trỏ 2 chiều
 
 - Một mảng 2 chiều có thể được biểu diễn trong C dưới dạng mảng 1 chiều mà các phần tử trong mảng là các con trỏ đến các mảng 1 chiều khác
 
->
+```C
     arr[i][j] == *(*(arr + i) + j)
+```
 
 ### Con trỏ hàm
 - Lưu trữ giá trị địa chỉ của 1 hàm nằm trong Text Segment
 - Tên hàm đóng vai trò như một hằng con trỏ hàm
 
->
+```C
     int add(int a, int b) {
         return a + b;
     }
+```
 
 - Con trỏ hàm phải có signature giống với hàm được gán cho con trỏ
 
-> 
+```C
     int (*func_point_to_add)(int, int) = add;
+```
+
+- Tên của các tham số khi khai báo hàm không nhất thiết phải giống với tên của tham số khi định nghĩa hàm, thậm chí khi khai báo hàm không cần có tên tham số cũng được
+
+```C
+    /* header.h */
+    int add(int, int);
+
+    /* source.c */
+    int add(int a, int b);
+```
 
 ### Callback Function
 

@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS_DEBUG = -Wall -Wextra -pedantic -g
 CFLAGS_RELEASE = -Wall -Wextra -pedantic -O3
 
-SRCS = main2.c
+SRCS = main2.c history_logger.c
 
 TARGET_DEBUG = ../bin/double_linked_list_Debug
 TARGET_RELEASE = ../bin/double_linked_list_Release

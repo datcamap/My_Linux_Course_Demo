@@ -4,205 +4,102 @@
 #include <unistd.h>
 #include <sys/select.h>
 #include <string.h>
+#include "history_logger.h"
 
 #define PROCESSING_PERIOD 10
 
-typedef struct TaskNode {
-    char task_description[50];
-    struct TaskNode* next;
-} TaskNode_t;
-
-typedef struct HistoryNode {
-    char log_entry[100];
-    struct HistoryNode* next;
-    struct HistoryNode* prev;
-} HistoryNode_t;
-
-static TaskNode_t* head_of_queue = NULL;
-static HistoryNode_t* history_cursor = NULL;
 size_t procesing_time_stamp;
 
-int kbhit(void) {
-    struct timeval tv = {0L, 0L};
-    fd_set fds;
-    FD_ZERO(&fds);
-    FD_SET(0, &fds);
-    return select(1, &fds, NULL, NULL, &tv);
-}
+void process_tasks(QueueList_t*, HistoryList_t*);
+void process_input(QueueList_t*, HistoryList_t*);
 
-void queue_add_task(const char* description);
-TaskNode_t* queue_get_next_task(void);
-void print_task_queue(void);
-void history_log_activity(const char* entry);
-void history_navigate(void);
-void process_tasks(void);
-void process_input(void);
-
-int main() {
+int main()
+{
     procesing_time_stamp = time(NULL);
-    queue_add_task("Initialize system");
-    printf("[Task Queue Manager]\n\t-a: add task\n\t-h: history navigator\n\t-t: print task queue\n");
+
+    QueueList_t _Queue_ = queue_create();
+    HistoryList_t hislery_list = history_create();
+    _Queue_.add_task(&_Queue_, "Initialize system");
+    printf("[Task Queue Manager]\n \
+            \t-a: add task\n \
+            \t-t: print task queue\n \
+            \t-h: history navigator\n \
+            \t-d: delete task queue\n");
     while (1)
     {
         if (time(NULL) - procesing_time_stamp >= PROCESSING_PERIOD) {
             procesing_time_stamp = time(NULL);
-            process_tasks();
+            process_tasks(&_Queue_, &hislery_list);
         }
-        if (kbhit() != 0) {
-            process_input();
-        }
+
+        process_input(&_Queue_, &hislery_list);
     }
     
-    print_task_queue();
+    _Queue_.print_task(&_Queue_);
 
     return 0;
 }
 
-void queue_add_task(const char* description)
+void process_tasks(QueueList_t* q_list, HistoryList_t* hist_list)
 {
-    TaskNode_t* new_task = (TaskNode_t*)malloc(sizeof(TaskNode_t));
-    if (new_task != NULL) {
-        snprintf(new_task->task_description, sizeof(new_task->task_description), "%s", description);
-        new_task->next = NULL;
-
-        if (head_of_queue == NULL) {
-            head_of_queue = new_task;
-        }
-        else {
-            TaskNode_t* current = head_of_queue;
-            while (current->next != NULL) {
-                current = current->next;
-            }
-            current->next = new_task;
-        }
+    TaskNode_t* task = q_list->get_next_task(q_list);
+    if (task == NULL) {
+        printf("No task to process.\n");
     } else {
-        printf("Memory allocation failed for new task.\n");
-    }
-}
-
-TaskNode_t* queue_get_next_task(void)
-{
-    if (head_of_queue == NULL) {
-        printf("No tasks in the queue.\n");
-        return NULL;
-    }
-
-    TaskNode_t* next_task = head_of_queue;
-    head_of_queue = head_of_queue->next;
-    return next_task;
-}
-
-void print_task_queue(void)
-{
-    if (head_of_queue == NULL) {
-        printf("Task queue is empty.\n");
-        return;
-    }
-
-    TaskNode_t* current = head_of_queue;
-    printf("Current Task Queue:\n");
-    while (current != NULL) {
-        printf("- %s\n", current->task_description);
-        current = current->next;
-    }
-}
-
-void history_log_activity(const char* entry)
-{
-    HistoryNode_t* new_entry = (HistoryNode_t*)malloc(sizeof(HistoryNode_t));
-    if (new_entry != NULL) {
-        time_t now = time(NULL);
-        struct tm *t = localtime(&now);
-        char buffer1[50];
-        strftime(buffer1, sizeof(buffer1), "[%Y-%m-%d %H:%M:%S]", t);
-        snprintf(new_entry->log_entry, sizeof(new_entry->log_entry), "%s - %s", buffer1, entry);
-        new_entry->next = NULL;
-        new_entry->prev = NULL;
-
-        if (history_cursor == NULL) {
-            history_cursor = new_entry;
-        }
-        else {
-            HistoryNode_t* current = history_cursor;
-            while (current->next != NULL) {
-                current = current->next;
-            }
-            current->next = new_entry;
-            new_entry->prev = current;
-        }
-    } else {
-        printf("Memory allocation failed for history log.\n");
-    }
-}
-
-void history_navigate(void)
-{
-    if (history_cursor == NULL) {
-        printf("No history entries available.\n");
-        return;
-    }
-
-    printf("[History Navigator]\n\t-n: next entry\n\t-p: previous entry\n\t-q: quit navigation\n");
-    while (1) {
-        if (kbhit() != 0) {
-            char command = getchar();
-            getchar();
-            if (command == 'n') {
-                if (history_cursor->next != NULL) {
-                    history_cursor = history_cursor->next;
-                }
-                else {
-                    printf("Reached bottom of history.\n");
-                }
-                printf(">>> %s <<<\n", history_cursor->log_entry);
-            }
-            else if (command == 'p') {
-                if (history_cursor->prev != NULL) {
-                    history_cursor = history_cursor->prev;
-                }
-                else {
-                    printf("Reached top of history.\n");
-                }
-                printf(">>> %s <<<\n", history_cursor->log_entry);
-            }
-            else if (command == 'q') {
-                printf("Exiting history navigation...\n");
-                break;
-            }
-            else {
-                printf("Invalid command.\n\t-n: next entry\n\t-p: previous entry\n\t-q: quit navigation\n");
-            }
-        }
-    }
-}
-
-void process_tasks(void)
-{
-    TaskNode_t* task = queue_get_next_task();
-    if (task != NULL) {
-        history_log_activity(task->task_description);
+        printf("Complete processing task \"%s\".\n",task->task_description);
+        hist_list->log_activity(hist_list, task->task_description);
         free(task);
     }
 }
 
-void process_input(void)
+void process_input(QueueList_t* q_list, HistoryList_t* hist_list)
 {
-    char input = getchar();
-    getchar(); // Consume the newline character
-    if (input == 'h') {
-        history_navigate();
-    }
-    else if (input == 'a') {
-        char task_input[50];
-        printf("Enter task description (50 characters max): ");
-        (void)fgets(task_input, sizeof(task_input), stdin);
-        task_input[strcspn(task_input, "\n")] = '\0'; // Remove newline character
-        queue_add_task(task_input);
-    }
-    else if (input == 't') {
-        print_task_queue();
-    }
-    else {
-        printf("Invalid input.\n\t-a: add task\n\t-h: history navigator\n\t-t: print task queue\n");
+    char input_char;
+    char dummy_char;
+    while((dummy_char=getchar()) == '\n');
+    input_char = dummy_char;
+    while ( getchar() != '\n' );
+    printf("input_char: [%c]\n", input_char);
+
+    switch (input_char) {
+        case 'a': {
+            char task_input[TASK_DESCRIPTION_LENGTH_MAX];
+            printf("Enter task description (%d characters max): ", TASK_DESCRIPTION_LENGTH_MAX);
+            if (fgets(task_input, sizeof(task_input), stdin) == NULL) {
+                printf("Failed to add that description!");
+                break;
+            }
+            task_input[strcspn(task_input, "\n")] = '\0'; // Replace newline character
+            if (task_input != NULL) {
+                q_list->add_task(q_list, task_input);
+                printf("Added task \"%s\" to the queue.\n", task_input);
+            } else {
+                printf("Nothing added.\n");
+            }
+            
+            break;
+        }
+        case 't': {
+            q_list->print_task(q_list);
+            break;
+        }
+        case 'h': {
+            hist_list->navigate(hist_list);
+            break;
+        }
+        case 'd': {
+            q_list->delete(q_list);
+            printf("Removed all tasks in queue!\n");
+            break;
+        }
+        case '\n': break;
+        case '\0': break;
+        default: {
+            printf("[Invalid Input] (%c) Please type in one of these letters:\n \
+                    \t-a: add task\n \
+                    \t-t: print task queue\n \
+                    \t-h: history navigator\n \
+                    \t-d: delete task queue\n", input_char);
+        }
     }
 }
