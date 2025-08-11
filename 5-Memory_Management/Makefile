@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS_DEBUG = -Wall -Wextra -pedantic -g
-CFLAGS_RELEASE = -Wall -Wextra -pedantic -O3
+CFLAGS_RELEASE = -g -Wall -Wextra -pedantic -O3
 
 SRCS = memory_lab.c
 

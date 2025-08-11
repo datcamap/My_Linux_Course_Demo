@@ -1,10 +1,6 @@
 #include "logger.h"
 
-static logger_config_t logger_config = {
-    .log_level = LOG_INFO,
-    .log_file_name = "default.log",
-    .f_to_file = LOG_TO_CONSOLE
-};
+static logger_t logger;
 
 static const char *log_level_strings[] = {
     "EMERGENCY",
@@ -17,20 +13,9 @@ static const char *log_level_strings[] = {
     "DEBUG"
 };
 
-logger_config_t *get_logger_config(void) {
-    return &logger_config;
-}
-
-void init_logger(const char *file_name, log_level_t level, LogMode_t mode)
-{
-    logger_config.log_level = level,
-    logger_config.log_file_name = (NULL != file_name) ? (char *)file_name : "default.log";
-    logger_config.f_to_file = mode;
-}
-
 void log_message(log_level_t level, const char *file, const int line, const char *message, ...)
 {
-    if (level < LOG_EMERGENCY || level > LOG_DEBUG || level > logger_config.log_level) {
+    if (level < LOG_EMERGENCY || level > LOG_DEBUG || level > logger.config.level) {
         return;
     }
 
@@ -47,13 +32,17 @@ void log_message(log_level_t level, const char *file, const int line, const char
     snprintf(buffer2, sizeof(buffer2), "[%s][%s:%d] - ", log_level_strings[level], file, line);
     
     // Print to stdout
-    printf("%s%s", buffer1, buffer2);
-    vprintf(message, args);
-    printf("\n");
+    if ( logger.config.mode == LOG_TO_CONSOLE_AND_FILE
+        || logger.config.mode == LOG_TO_CONSOLE ) {
+        printf("%s%s", buffer1, buffer2);
+        vprintf(message, args);
+        printf("\n");
+    }
 
     // Write to file
-    if (logger_config.f_to_file == LOG_TO_CONSOLE_AND_FILE) {
-        FILE *filep = fopen(logger_config.log_file_name, "a");
+    if ( logger.config.mode == LOG_TO_CONSOLE_AND_FILE
+        || logger.config.mode == LOG_TO_FILE ) {
+        FILE *filep = fopen(logger.config.file_name, "a");
         //printf("I'm here");
         if (filep != NULL) {
             fprintf(filep, "%s%s", buffer1, buffer2);
@@ -61,20 +50,27 @@ void log_message(log_level_t level, const char *file, const int line, const char
             fprintf(filep, "\n");
             fclose(filep);
         } else {
-            fprintf(stderr, "Could not open log file: %s\n", logger_config.log_file_name);
+            fprintf(stderr, "Could not open log file: %s\n", logger.config.file_name);
         }
     }
 
     va_end(args);
 }
 
-void set_log_level(log_level_t level)
+void init_logger(log_level_t log_level, const char* log_file_name, log_mode_t log_mode)
 {
-    if (level < LOG_EMERGENCY || level > LOG_DEBUG) {
-        fprintf(stderr, "Invalid log level: %d\n", level);
+    logger.config.level = log_level;
+    snprintf(logger.config.file_name, sizeof(logger.config.file_name), "%s", log_file_name);
+    logger.config.mode = log_mode;
+}
+
+void set_log_level(log_level_t log_level)
+{
+    if (log_level < LOG_EMERGENCY || log_level > LOG_DEBUG) {
+        fprintf(stderr, "Invalid log level: %d\n", log_level);
         return;
     }
-    logger_config.log_level = level;
+    logger.config.level = log_level;
 
-    LOG_MESSAGE(logger_config.log_level,"Log level changed to %s", log_level_strings[logger_config.log_level]);
+    LOG_MESSAGE(logger.config.level,"Log level changed to %s", log_level_strings[logger.config.level]);
 }

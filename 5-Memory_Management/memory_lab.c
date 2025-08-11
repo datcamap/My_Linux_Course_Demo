@@ -18,17 +18,16 @@ void create_memory_leak(uint32_t heap_size) {
 void create_out_of_memory() {
     // Continuously allocate memory until the system runs out of memory
     while (1) {
-        char* data = (char *)malloc(100 * 1024 * 1024);
-        if (data != NULL) {
-            printf("Allocated 100MB at address 0X%016lX\n", (size_t)data);
-            for (int i = 0; i < 100 * 1024 * 1024; i++) {
-                data[i] = 'A'; // Fill the allocated memory to simulate usage
-            }
-        }
-        else {
-            // If malloc fails, it means the system is out of memory
+        long long* data = (long long *)malloc(sizeof(long long) * 1024 * 1024 * 100);
+        if (data == NULL) {
             printf("Out of memory condition reached.\n");
             break;
+        }
+        else {
+            printf("Allocated 100MB at addresss 0X%016lX\n", (size_t)data);
+            for (int i = 0; i < 1024 * 1024; i++) {                
+                data[i] = 'A'; // Fill the allocated memory to simulate usage
+            }
         }
     }
 }

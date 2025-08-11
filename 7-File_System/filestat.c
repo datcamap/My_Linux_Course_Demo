@@ -24,12 +24,10 @@ static char* convert_time_to_string(time_t time_value) {
 }
 
 static char* get_full_path(const char* file_path) {
-    static char* full_path = realpath(file_path, NULL;
-    if (len != -1) {
-        path[len] = '\0';
-        snprintf(full_path, sizeof(full_path), "%s", path);
-    } else {
-        perror("readlink");
+    static char* full_path;
+    full_path = realpath(file_path, NULL);
+    if (full_path == NULL) {
+        perror("Cannot get file directory.");
     }
     return full_path;
 }
@@ -50,10 +48,11 @@ int main(int argc, char* argv[]) {
         struct stat file_stat;
         if (stat(argv[1], &file_stat) != 0) {
             perror("Error retrieving file statistics");
+            printf("Usage: %s <file_path>\n", argv[0]);
             return 1;
         }
 
-        printf("File: %s\n", argv[1]);
+        printf("File: %s\n", get_full_path(argv[1]));
         printf("File type: %s \n", get_file_type(&file_stat));
         printf("Size: %lld bytes\n", (long long)file_stat.st_size);
         printf("Last modified: %s\n", convert_time_to_string(file_stat.st_mtime));

@@ -20,20 +20,20 @@ int main()
     }
 
     // Initialize the logger with a specific log file, log level, and mode
-    init_logger(LOG_WARNING, file_path, LOG_TO_CONSOLE_AND_FILE);
+    logger_t leg = init_logger(LOG_WARNING, file_path, LOG_TO_CONSOLE_AND_FILE);
     
     // Example usage of the logger
-    LOG_MESSAGE(LOG_INFO, "This is an info message.");
+    leg.i("This is an info message.");
     uint8_t a = 2;
     char* b = "arguments";
-    LOG_MESSAGE(LOG_WARNING, "This is a warning message with %d %s.", a, b);
-    LOG_MESSAGE(LOG_ERROR,"This is an error message.");
-    LOG_MESSAGE(LOG_DEBUG,"This is a debug message.");
+    leg.w("This is a warning message with %d %s.", a, b);
+    leg.err("This is an error message.");
+    leg.d("This is a debug message.");
 
     // Change log level to DEBUG
     set_log_level(LOG_DEBUG);
-    LOG_MESSAGE(LOG_DEBUG,"Debugging enabled.");
-    LOG_MESSAGE(LOG_INFO,"This is an info message.");
+    leg.d("Debugging enabled.");
+    leg.i("This is an info message.");
 
     return 0;
 }

@@ -4,6 +4,11 @@
 
 Giới hạn số lượng ký tự nhập vào buffer
 
+```c
+char name[10];
+scanf("%s", name);
+```
+
 >
     char name[10];
     scanf("%s", name);
