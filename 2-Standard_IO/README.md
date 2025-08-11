@@ -9,27 +9,32 @@ char name[10];
 scanf("%s", name);
 ```
 
->
+```C
     char name[10];
     scanf("%s", name);
+```
 
 - Trong đoạn code trên, nếu nhập vào trên 10 ký tự thì chương trình sẽ báo lỗi " stack smashing detected "
 - Có thể thêm giới hạn 10 cho format specifier để tránh việc nhập quá nhiều ký tự vào buffer
 
->
+```C
     char name[10];
     scanf("%10s", name);
+```
 
 - Trong ví dụ dưới đây, hàm sprintf() đang cố ghi một chuỗi dài hơn 5 vào bộ đệm outbuffer, khi chạy cũng sẽ phát sinh lỗi " stack smashing detected "
 
->
+```C
     uint8_t outbuffer[5] = {};
     sprintf(outbuffer,"This_is_a_very_long_text \n\r");
     printf("%s", outbuffer);
+```
 
 - Giải pháp ở đây là luôn sử dụng hàm snprintf() thay cho sprintf() vì snprintf() nhận vào thêm 1 tham số là kích thước tối đa được phép ghi vào bộ đệm
->
+
+```C
     snprintf(outbuffer, sizeof(outbuffer), "This_is_a_very_long_text \n\r");
+```
 
 ### Thư viện <stdarg.h>
 
@@ -48,8 +53,9 @@ scanf("%s", name);
 - Giảm số lần giao tiếp trực tiếp với phần cứng cũng sẽ tăng tuổi thọ cho phần cứng
 - Kiểm soát kích thước của buffer trước khi gọi ra các hàm system call
 
->
+```C
     int setvbuf(FILE *stream,char *buffer,int mode, size_t size);
+```
 
 - stream: con trỏ file
 - buffer: con trỏ đến bộ đệm

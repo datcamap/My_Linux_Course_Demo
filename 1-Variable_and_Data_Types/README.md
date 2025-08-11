@@ -13,11 +13,15 @@
 - Khai báo rằng biến hoặc hàm đã được định nghĩa ở một nơi khác
 - Hàm được khai báo thì sẽ mặc định được coi như có từ khoá extern
 
-> int Add (int a, int b);
+```C
+    int Add (int a, int b);
+```
 
 và
 
-> extern int Add (int a, int b); 
+```C
+    extern int Add (int a, int b); 
+```
 
 đều có nghĩa như nhau đối với compiler
 
@@ -49,23 +53,22 @@ và
 
 Memory alignment: Hầu hết CPU được thiết kế để truy cập dữ liệu hiệu quả nhất khi mà dữ liệu được đặt trong ô nhớ có địa chỉ là bội số kích thước của dữ liệu
  - Ví dụ: uint32_t (4 bytes) nên được đặt trong ô nhớ có địa chỉ chia hết cho 4
->
+
+```C
     typedef struct {
         uint32_t height;
         uint32_t width;
         uint8_t speed;
         char name[7];
-    }monitor1_t;
+    }monitor1_t; // monitor1_t có kích thước là 16 bytes
 
     typedef struct {
         uint32_t height;
         uint8_t speed;
         uint32_t width;
         char name[7];
-    }monitor2_t;
-
-- monitor1_t có kích thước là 16 bytes
-- monitor2_t có kích thước là 20 bytes 
+    }monitor2_t; // monitor2_t có kích thước là 20 bytes 
+```
 
 ![Padding!](./Memory%20padding.png "Padding")
 
@@ -75,7 +78,7 @@ Memory alignment: Hầu hết CPU được thiết kế để truy cập dữ li
 - Tiết kiệm bộ nhớ tối đa
 - Biểu diễn thanh ghi thông qua struct
 
->
+```C
     typedef struct {
         uint8_t ODR : 4;
         uint8_t BDU : 1;
@@ -83,6 +86,7 @@ Memory alignment: Hầu hết CPU được thiết kế để truy cập dữ li
         uint8_t Yen : 1;
         uint8_t Xen : 1;
     } CTRL_REG4;
+```
 
 - CTRL_REG4 có kích thước là 1 byte
 - Thứ tự các bit trên bộ nhớ còn phụ thuộc vào kiến trúc của hệ thống là Big Endian hay là Little Endian
@@ -98,11 +102,12 @@ Memory alignment: Hầu hết CPU được thiết kế để truy cập dữ li
 
 - Kỹ thuật diễn giải lại các bit của kiểu dữ liệu này như một kiểu dữ liệu khác
 
->
+```C
     typedef union {
         uint32_t IP;
         uint8_t IPmasked[4];
     } IP_address;
+```
 
 - Giả sử gán giá trị 0xC0A80101 cho thành phần IP 
 - Tùy vào kiến trúc của hệ thống là Big Endian hay Little Endian mà các byte sẽ được sắp xếp khác nhau

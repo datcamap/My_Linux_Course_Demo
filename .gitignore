@@ -7,3 +7,5 @@ bin/
 *.o
 
 .vscode/
+
+.do_somthing.sh
