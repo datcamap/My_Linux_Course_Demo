@@ -8,7 +8,15 @@
 
 #define PROCESSING_PERIOD 10
 
-size_t procesing_time_stamp;
+time_t procesing_time_stamp;
+
+int kbhit(void) {
+    struct timeval tv = {0L, 0L};
+    fd_set fds;
+    FD_ZERO(&fds);
+    FD_SET(0, &fds);
+    return select(1, &fds, NULL, NULL, &tv);
+}
 
 void process_tasks(QueueList_t*, HistoryList_t*);
 void process_input(QueueList_t*, HistoryList_t*);
@@ -18,8 +26,9 @@ int main()
     procesing_time_stamp = time(NULL);
 
     QueueList_t _Queue_ = queue_create();
-    HistoryList_t hislery_list = history_create();
+    HistoryList_t histery_list = history_create();
     _Queue_.add_task(&_Queue_, "Initialize system");
+
     printf("[Task Queue Manager]\n \
             \t-a: add task\n \
             \t-t: print task queue\n \
@@ -29,10 +38,12 @@ int main()
     {
         if (time(NULL) - procesing_time_stamp >= PROCESSING_PERIOD) {
             procesing_time_stamp = time(NULL);
-            process_tasks(&_Queue_, &hislery_list);
+            process_tasks(&_Queue_, &histery_list);
         }
 
-        process_input(&_Queue_, &hislery_list);
+        if (kbhit()) {
+            process_input(&_Queue_, &histery_list);
+        }
     }
     
     _Queue_.print_task(&_Queue_);
@@ -62,39 +73,40 @@ void process_input(QueueList_t* q_list, HistoryList_t* hist_list)
     printf("input_char: [%c]\n", input_char);
 
     switch (input_char) {
-        case 'a': {
-            char task_input[TASK_DESCRIPTION_LENGTH_MAX];
-            printf("Enter task description (%d characters max): ", TASK_DESCRIPTION_LENGTH_MAX);
-            if (fgets(task_input, sizeof(task_input), stdin) == NULL) {
-                printf("Failed to add that description!");
-                break;
-            }
-            task_input[strcspn(task_input, "\n")] = '\0'; // Replace newline character
-            if (task_input != NULL) {
-                q_list->add_task(q_list, task_input);
-                printf("Added task \"%s\" to the queue.\n", task_input);
-            } else {
-                printf("Nothing added.\n");
-            }
-            
+    case 'a': {
+        char task_input[TASK_DESCRIPTION_LENGTH_MAX];
+        printf("Enter task description (%d characters max): ", TASK_DESCRIPTION_LENGTH_MAX);
+        if (fgets(task_input, sizeof(task_input), stdin) == NULL) {
+            printf("Failed to add that description!");
             break;
         }
-        case 't': {
+        task_input[strcspn(task_input, "\n")] = '\0'; // Replace newline character
+        char* dummy = "";
+        if (task_input != dummy) {
+            q_list->add_task(q_list, task_input);
+            printf("Added task \"%s\" to the queue.\n", task_input);
+        } else {
+            printf("Nothing added.\n");
+        }
+        
+        break;
+    }
+    case 't': {
             q_list->print_task(q_list);
             break;
         }
-        case 'h': {
+    case 'h': {
             hist_list->navigate(hist_list);
             break;
         }
-        case 'd': {
+    case 'd': {
             q_list->delete(q_list);
             printf("Removed all tasks in queue!\n");
             break;
         }
-        case '\n': break;
-        case '\0': break;
-        default: {
+    case '\n': break;
+    case '\0': break;
+    default: {
             printf("[Invalid Input] (%c) Please type in one of these letters:\n \
                     \t-a: add task\n \
                     \t-t: print task queue\n \

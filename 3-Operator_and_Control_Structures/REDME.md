@@ -5,8 +5,9 @@
 - Khi so sánh 2 số thực , do sai số làm tròn nên nếu so sánh chính xác là việc rất rủi ro
 - Giải pháp: Luôn so sánh trong một khoảng sai số rất nhỏ
 
->
+```C
     fagb(a-b) < EPSILON
+```
 
 - fabs(): hàm lấy giá trị tuyệt đối của 1 số thực
 - EPSILON: hằng số rất nhỏ (ví dụ 0.00001f)
@@ -22,3 +23,6 @@ Một kỹ thuật tối ưu hóa được compiler sử dụng cho câu lệnh 
 - Khi chạy câu lệnh switch, CPU sẽ dùng giá trị của case như 1 chỉ số mảng để truy cập thẳng tới địa chỉ của vùng code cần thực thi
 
 ### Polling & Interrupt
+
+- Polling: always blocking
+- Interrupt: block only when some conditions are met 
