@@ -1,0 +1,1 @@
+- Facade cung cấp các interface cấp cao, giúp người dùng tương tác với thư viện cấp thấp 1 cách dễ dàng
