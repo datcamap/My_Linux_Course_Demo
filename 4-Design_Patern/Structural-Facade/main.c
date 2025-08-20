@@ -14,7 +14,6 @@ int main(void) {
     Lighting lighting;
     Security security;
     HVAC     hvac;
-
     ZigbeeLightingImpl light_impl;
     BasicSecurityImpl  sec_impl;
     SimpleHVACImpl     hvac_impl;

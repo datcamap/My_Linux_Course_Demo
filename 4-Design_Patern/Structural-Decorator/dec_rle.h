@@ -10,4 +10,4 @@ typedef struct {
 
 void dec_rle_init(Channel* wrapper, DecRleImpl* storage, Channel* inner);
 
-#endif /* DEC_RLE_H */
+#endif // DEC_RLE_H

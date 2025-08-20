@@ -20,22 +20,20 @@ enum {
 
 typedef struct Channel Channel;
 
-typedef struct {
+struct Channel {
     int  (*send)(Channel* self, const uint8_t* data, size_t len);
     int  (*receive)(Channel* self, uint8_t* buffer, size_t bufferLength, size_t* out_len);
-} ChannelOps;
-
-struct Channel {
-    const ChannelOps* ops;
     void*             impl;
 };
 
 /* Helper inline */
-static inline int channel_send(Channel* c, const uint8_t* d, size_t n) {
-    return (c && c->ops && c->ops->send) ? c->ops->send(c, d, n) : CH_ERR;
+static inline int channel_send(Channel* c, const uint8_t* d, size_t n)
+{
+    return (c && c->send) ? c->send(c, d, n) : CH_ERR;
 }
-static inline int channel_receive(Channel* c, uint8_t* b, size_t cap, size_t* out) {
-    return (c && c->ops && c->ops->receive) ? c->ops->receive(c, b, cap, out) : CH_ERR;
+static inline int channel_receive(Channel* c, uint8_t* b, size_t cap, size_t* out)
+{
+    return (c && c->receive) ? c->receive(c, b, cap, out) : CH_ERR;
 }
 
-#endif /* CHANNEL_H */
+#endif // CHANNEL_H

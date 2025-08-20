@@ -64,14 +64,11 @@ static int ccrc_receive(Channel* self, uint8_t* out, size_t cap, size_t* out_len
     return (int)payload;
 }
 
-static const ChannelOps OPS = {
-    .send = ccrc_send,
-    .receive = ccrc_receive
-};
-
 void dec_crc16_init(Channel* wrapper, DecCRC16Impl* storage, Channel* inner)
 {
     storage->inner = inner;
-    wrapper->ops = &OPS;
+    
+    wrapper->send = ccrc_send;
+    wrapper->receive = ccrc_receive;
     wrapper->impl = storage;
 }

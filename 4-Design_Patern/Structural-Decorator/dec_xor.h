@@ -11,4 +11,4 @@ typedef struct {
 
 void dec_xor_init(Channel* wrapper, DecXorImpl* storage, Channel* inner, uint8_t key);
 
-#endif /* DEC_XOR_H */
+#endif // DEC_XOR_H

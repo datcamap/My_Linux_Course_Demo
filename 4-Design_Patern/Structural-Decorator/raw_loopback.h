@@ -8,7 +8,6 @@ typedef struct {
     size_t  head, tail; /* FIFO đơn giản */
 } RawLoopbackImpl;
 
-/* Gán ops + impl vào Channel đã cấp sẵn (không dùng malloc) */
 void raw_loopback_init(Channel* ch, RawLoopbackImpl* storage);
 
-#endif /* RAW_LOOPBACK_H */
+#endif // RAW_LOOPBACK_H
