@@ -44,9 +44,13 @@ int main(void) {
     if (s < 0) { printf("send err %d\n", s); return 1; }
 
     /* Nhận ngược lại từ “đầu trên cùng”: RAW -> CRC -> XOR -> RLE */
-    uint8_t out[CH_MAX_FRAME]; size_t got = 0;
+    uint8_t out[CH_MAX_FRAME];
+    size_t got = 0;
     int r = channel_receive(&ch_rle, out, sizeof out, &got);
-    if (r < 0) { printf("recv err %d\n", r); return 1; }
+    if (r < 0) {
+        printf("recv err %d\n", r);
+        return 1;
+    }
 
     printf("App RECV %zu bytes\n", got);
     int ok = (got == sizeof msg) && (memcmp(out, msg, got) == 0);
