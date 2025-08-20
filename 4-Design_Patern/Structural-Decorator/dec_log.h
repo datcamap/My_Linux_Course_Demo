@@ -3,10 +3,6 @@
 
 #include "channel.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 typedef void (*log_fn_t)(const char* dir, const uint8_t* data, size_t n);
 
 typedef struct {
@@ -17,7 +13,4 @@ typedef struct {
 
 void dec_log_init(Channel* wrapper, DecLogImpl* storage, Channel* inner, log_fn_t fn);
 
-#ifdef __cplusplus
-}
-#endif
 #endif /* DEC_LOG_H */

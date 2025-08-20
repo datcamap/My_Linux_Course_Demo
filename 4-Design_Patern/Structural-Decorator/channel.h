@@ -21,17 +21,13 @@ enum {
 typedef struct Channel Channel;
 
 typedef struct {
-    /* Trả về số byte đã gửi hoặc mã lỗi âm */
     int  (*send)(Channel* self, const uint8_t* data, size_t len);
-
-    /* Trả về số byte đã nhận (cũng ghi vào *out_len) hoặc mã lỗi âm
-       Yêu cầu: bufferLength đủ chứa dữ liệu sau KHI decorator xử lý xong. */
     int  (*receive)(Channel* self, uint8_t* buffer, size_t bufferLength, size_t* out_len);
 } ChannelOps;
 
 struct Channel {
     const ChannelOps* ops;
-    void*             impl;   /* trạng thái của driver/decorator */
+    void*             impl;
 };
 
 /* Helper inline */

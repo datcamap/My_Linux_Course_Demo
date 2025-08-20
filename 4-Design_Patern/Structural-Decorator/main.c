@@ -9,19 +9,29 @@
 
 int main(void) {
     /* 1) Tạo raw */
-    Channel raw; RawLoopbackImpl raw_mem; raw_loopback_init(&raw, &raw_mem);
+    Channel raw;
+    RawLoopbackImpl raw_mem;
+    raw_loopback_init(&raw, &raw_mem);
 
     /* 2) Bọc CRC trên raw */
-    Channel ch_crc; DecCRC16Impl crc_mem; dec_crc16_init(&ch_crc, &crc_mem, &raw);
+    Channel ch_crc;
+    DecCRC16Impl crc_mem;
+    dec_crc16_init(&ch_crc, &crc_mem, &raw);
 
     /* 3) Bọc XOR trên CRC */
-    Channel ch_xor; DecXorImpl xor_mem; dec_xor_init(&ch_xor, &xor_mem, &ch_crc, 0x5A);
+    Channel ch_xor;
+    DecXorImpl xor_mem;
+    dec_xor_init(&ch_xor, &xor_mem, &ch_crc, 0x5A);
 
     /* 4) Bọc RLE trên XOR (đây là kênh app sẽ dùng) */
-    Channel ch_rle; DecRleImpl rle_mem; dec_rle_init(&ch_rle, &rle_mem, &ch_xor);
+    Channel ch_rle;
+    DecRleImpl rle_mem;
+    dec_rle_init(&ch_rle, &rle_mem, &ch_xor);
 
     /* (Tùy chọn) quan sát: thêm log ở ngay trên raw để xem dữ liệu thực sự qua “dây” */
-    Channel ch_log; DecLogImpl log_mem; dec_log_init(&ch_log, &log_mem, &raw, NULL);
+    Channel ch_log;
+    DecLogImpl log_mem;
+    dec_log_init(&ch_log, &log_mem, &raw, NULL);
     /* Nếu muốn, thay inner của CRC thành ch_log để log dưới lớp CRC:
        dec_crc16_init(&ch_crc, &crc_mem, &ch_log); */
 
