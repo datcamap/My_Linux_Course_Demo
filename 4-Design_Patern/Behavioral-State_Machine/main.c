@@ -28,7 +28,7 @@ int main(void) {
             break;
         }
         default: {
-            printf("Please type in c, p, s, b \n");
+            printf("Please type in c, p, s, q \n");
             break;
         }
         }

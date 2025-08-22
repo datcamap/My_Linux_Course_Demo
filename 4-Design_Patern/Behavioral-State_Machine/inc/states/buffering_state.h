@@ -5,4 +5,4 @@
 
 PlayerState* buffering_state_instance(void);
 
-#endif /* BUFFERING_STATE_H */
+#endif // BUFFERING_STATE_H

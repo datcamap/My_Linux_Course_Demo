@@ -8,8 +8,6 @@ typedef struct {
     PlayerState base;
 } StoppedState;
 
-static const char* name(PlayerState *self) { (void)self; return "Stopped"; }
-
 static void pressPlay(PlayerState *self) {
     printf("[Stopped] Nhấn Play: Bắt đầu phát nhạc…\n");
     music_player_change_state(self->player, buffering_state_instance());
@@ -26,14 +24,14 @@ static void pressStop(PlayerState *self) {
 static const PlayerStateVTable VTABLE = {
     .pressPlay  = pressPlay,
     .pressPause = pressPause,
-    .pressStop  = pressStop,
-    .name       = name
+    .pressStop  = pressStop
 };
 
 PlayerState* stopped_state_instance(void) {
     static StoppedState instance;
     static int inited = 0;
     if (!inited) {
+        instance.base.state = STATE_STOPPED;
         instance.base.vptr = &VTABLE;
         instance.base.player = NULL;
         inited = 1;

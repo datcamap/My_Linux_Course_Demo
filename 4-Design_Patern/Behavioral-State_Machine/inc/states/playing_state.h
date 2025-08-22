@@ -5,4 +5,4 @@
 
 PlayerState* playing_state_instance(void);
 
-#endif /* PLAYING_STATE_H */
+#endif // PLAYING_STATE_H

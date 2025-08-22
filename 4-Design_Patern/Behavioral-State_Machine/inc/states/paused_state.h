@@ -5,4 +5,4 @@
 
 PlayerState* paused_state_instance(void);
 
-#endif /* PAUSED_STATE_H */
+#endif // PAUSED_STATE_H
