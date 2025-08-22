@@ -8,9 +8,10 @@ void hvac_driver_mock_init(struct HVAC* obj, void* storage);
 
 typedef struct { int dummy; } ZigbeeLightingImpl;
 typedef struct { int perimeter_armed; int cameras_on; } BasicSecurityImpl;
-typedef struct { float target_c; int mode; } SimpleHVACImpl;
+typedef struct { float target_c; int mode; int a;} SimpleHVACImpl;
 
-int main(void) {
+int main(void)
+{
     Lighting lighting;
     Security security;
     HVAC     hvac;
@@ -29,13 +30,15 @@ int main(void) {
     facade_activate_morning_routine(&home, NULL);
 
     // Custom options
-    SceneOptions opt = { .bedroom_brightness = 70, .comfort_temp = 24.5f, .keep_perimeter_armed = 0 };
+    SceneOptions opt = {
+        .bedroom_brightness = 70,
+        .comfort_temp = 24.5f,
+        .keep_perimeter_armed = 0
+    };
     facade_activate_morning_routine(&home, &opt);
 
-    // Movie night
     facade_set_movie_night_scene(&home);
 
-    // Away mode
     facade_activate_away_mode(&home);
 
     // High-level individual controls

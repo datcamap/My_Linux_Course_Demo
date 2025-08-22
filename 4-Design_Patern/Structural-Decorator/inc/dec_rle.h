@@ -5,7 +5,7 @@
 
 typedef struct {
     Channel* inner;
-    uint8_t  scratch[CH_MAX_FRAME]; /* chứa bản nén khi gửi / dữ liệu nén khi nhận */
+    uint8_t  scratch[CH_MAX_FRAME];
 } DecRleImpl;
 
 void dec_rle_init(Channel* wrapper, DecRleImpl* storage, Channel* inner);

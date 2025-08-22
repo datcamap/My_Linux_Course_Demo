@@ -18,4 +18,4 @@ static inline void security_arm_perimeter(Security* s) { if (s && s->ops && s->o
 static inline void security_disarm(Security* s) { if (s && s->ops && s->ops->disarm) s->ops->disarm(s); }
 static inline void security_enable_cameras(Security* s, int on) { if (s && s->ops && s->ops->enable_cameras) s->ops->enable_cameras(s, on); }
 
-#endif /* SECURITY_H */
+#endif // SECURITY_H 

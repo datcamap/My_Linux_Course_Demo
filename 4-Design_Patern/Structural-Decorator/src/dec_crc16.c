@@ -42,24 +42,27 @@ static int ccrc_receive(Channel* self, uint8_t* out, size_t cap, size_t* out_len
         return rc;
     }
     if (n < 2) {
-        if (out_len) *out_len = 0; 
+        if (out_len) {
+            *out_len = 0;
+        }
         return 0; 
     }
+
     size_t payload = n - 2;
-    uint16_t got = (uint16_t)st->scratch[payload] | ((uint16_t)st->scratch[payload+1] << 8);
-    uint16_t exp = crc16_ccitt(st->scratch, payload);
-    if (got != exp) {
-        return CH_ERR_CRC;
+    if (out_len) {
+        *out_len = payload;
     }
     if (payload > cap) {
         return CH_ERR_OVERFLOW;
     }
+
+    uint16_t got = (uint16_t)st->scratch[payload] | ((uint16_t)st->scratch[payload+1] << 8);
+    uint16_t expected = crc16_ccitt(st->scratch, payload);
+    if (got != expected) {
+        return CH_ERR_CRC;
+    }
     
     memcpy(out, st->scratch, payload);
-    
-    if (out_len) {
-        *out_len = payload;
-    }
     
     return (int)payload;
 }

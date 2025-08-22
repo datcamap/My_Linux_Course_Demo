@@ -8,59 +8,59 @@
 #include "dec_log.h"
 
 int main(void) {
-    /* 1) Tạo raw */
+    /* 1) Tạo raw
+     * 2) Bọc CRC trên raw
+     * 3) Bọc XOR trên CRC
+     * 4) Bọc RLE trên XOR (đây là kênh app sẽ dùng)
+     */
     Channel raw;
     RawLoopbackImpl raw_mem;
     raw_loopback_init(&raw, &raw_mem);
 
-    /* 2) Bọc CRC trên raw */
     Channel ch_crc;
     DecCRC16Impl crc_mem;
     dec_crc16_init(&ch_crc, &crc_mem, &raw);
 
-    /* 3) Bọc XOR trên CRC */
     Channel ch_xor;
     DecXorImpl xor_mem;
     dec_xor_init(&ch_xor, &xor_mem, &ch_crc, 0x5A);
 
-    /* 4) Bọc RLE trên XOR (đây là kênh app sẽ dùng) */
     Channel ch_rle;
     DecRleImpl rle_mem;
     dec_rle_init(&ch_rle, &rle_mem, &ch_xor);
 
-    /* (Tùy chọn) quan sát: thêm log ở ngay trên raw để xem dữ liệu thực sự qua “dây” */
-    Channel ch_log;
-    DecLogImpl log_mem;
-    dec_log_init(&ch_log, &log_mem, &raw, NULL);
-    /* Nếu muốn, thay inner của CRC thành ch_log để log dưới lớp CRC:
-       dec_crc16_init(&ch_crc, &crc_mem, &ch_log); */
-
     /* Gói tin demo: nhiều byte giống nhau để RLE hiệu quả */
-    const uint8_t msg[] = { 0xAA,0xAA,0xAA,0xAA,0xAA, 0x10,0x10, 0x01,0x02,0x03, 0x10,0x10 };
-    printf("App SEND %zu bytes\n", sizeof msg);
+    const uint8_t msg[] = { 
+        0x2D,0x2D,0x2D,0x2D,0x2D,0x2D,0x2D,0x2D,0x2D,0x2D,
+        0x5B,0x48,0x65,0x6C,0x6C,0x6F,0x5F,0x57,0x6F,0x72,0x6C,0x64,0x5D,
+        0x2D,0x2D,0x2D,0x2D,0x2D,0x2D,0x2D,0x2D,0x2D,0x2D 
+    };
 
     /* Gửi qua “đầu trên cùng”: RLE -> XOR -> CRC -> RAW */
     int s = channel_send(&ch_rle, msg, sizeof msg);
-    if (s < 0) { printf("send err %d\n", s); return 1; }
+    if (s < 0) {
+        printf("send err %d\n", s);
+        return 1;
+    }
+    printf("App SENT %zu bytes\n", sizeof msg);
 
     /* Nhận ngược lại từ “đầu trên cùng”: RAW -> CRC -> XOR -> RLE */
     uint8_t out[CH_MAX_FRAME];
     size_t got = 0;
-    int r = channel_receive(&ch_rle, out, sizeof out, &got);
-    if (r < 0) {
-        printf("recv err %d\n", r);
+    if (channel_receive(&ch_rle, out, sizeof out, &got) < 0) {
         return 1;
     }
-
     printf("App RECV %zu bytes\n", got);
-    int ok = (got == sizeof msg) && (memcmp(out, msg, got) == 0);
-    printf("Round-trip %s\n", ok ? "OK" : "FAIL");
 
     /* In dữ liệu nhận để kiểm chứng */
-    if (ok) {
+    if ((got == sizeof msg) && (memcmp(out, msg, got) == 0)) {
+        printf("Round-trip OK\n");
         printf("Payload: ");
-        for (size_t i = 0; i < got; ++i) printf("%02X ", out[i]);
+        for (size_t i = 0; i < got; ++i) {
+            printf("%02X ", out[i]);
+        }
         printf("\n");
     }
-    return ok ? 0 : 2;
+
+    return 0;
 }

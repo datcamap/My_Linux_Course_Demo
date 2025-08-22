@@ -29,7 +29,7 @@ int main(void) {
         printf("Build radio failed: %s\n", uart_builder_error(&b2));
     }
 
-    /* Ví dụ cấu hình tuỳ biến + lỗi cố ý (9 data bits + parity) */
+    /* Error (9 data bits + parity) */
     UartBuilder b3 = uart_builder_new();
     b3.set_baud(&b3, 57600);
     b3.set_databits(&b3, UART_DATABITS_9);
@@ -39,7 +39,7 @@ int main(void) {
         printf("Build custom failed as expected: %s\n", uart_builder_error(&b3));
     }
 
-    /* Một cấu hình Modbus điển hình 19200 8E1 */
+    /* Typical modbus configuration (19200 8E1) */
     UartBuilder b4 = uart_builder_new();
     uart_preset_modbus(&b4);
     UartConfig modbus_cfg;

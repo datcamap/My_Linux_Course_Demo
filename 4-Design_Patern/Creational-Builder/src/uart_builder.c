@@ -3,7 +3,6 @@
 #include <stdbool.h>
 #include "../inc/uart_builder.h"
 
-/* Fluent setters: trả về *builder để chain */
 static UartBuilder* uart_set_baud(UartBuilder* b, uint32_t baud);
 static UartBuilder* uart_set_parity(UartBuilder* b, UartParity parity);
 static UartBuilder* uart_set_stopbits(UartBuilder* b, UartStopBits stop_bits);
@@ -55,7 +54,6 @@ UartBuilder uart_builder_new(void) {
     b.cfg.data_bits = UART_DEFAULT_DATABITS;
     b.cfg.flow      = UART_DEFAULT_FLOW;
     b.last_error[0] = '\0';
-    b.frozen        = false;
     b.set_baud = uart_set_baud;
     b.set_parity = uart_set_parity;
     b.set_stopbits = uart_set_stopbits;
@@ -66,32 +64,35 @@ UartBuilder uart_builder_new(void) {
 
 /* ---------- fluent setters ---------- */
 static UartBuilder* uart_set_baud(UartBuilder* b, uint32_t baud) {
-    if (!b) return NULL;
-    if (b->frozen) { set_error(b, "builder is frozen"); return b; }
+    if (!b) {
+        return NULL;
+    }
     b->cfg.baud = baud;
     return b;
 }
 static UartBuilder* uart_set_parity(UartBuilder* b, UartParity parity) {
-    if (!b) return NULL;
-    if (b->frozen) { set_error(b, "builder is frozen"); return b; }
+    if (!b) {
+        return NULL;
+    }
     b->cfg.parity = parity;
     return b;
 }
 static UartBuilder* uart_set_stopbits(UartBuilder* b, UartStopBits stop_bits) {
-    if (!b) return NULL;
-    if (b->frozen) { set_error(b, "builder is frozen"); return b; }
+    if (!b) {
+        return NULL;
+    }
     b->cfg.stop_bits = stop_bits;
     return b;
 }
 static UartBuilder* uart_set_databits(UartBuilder* b, UartDataBits data_bits) {
-    if (!b) return NULL;
-    if (b->frozen) { set_error(b, "builder is frozen"); return b; }
+    if (!b) {
+        return NULL;
+    }
     b->cfg.data_bits = data_bits;
     return b;
 }
 static UartBuilder* uart_set_flow(UartBuilder* b, UartFlow flow) {
     if (!b) return NULL;
-    if (b->frozen) { set_error(b, "builder is frozen"); return b; }
     b->cfg.flow = flow;
     return b;
 }
@@ -124,12 +125,8 @@ UartBuilder* uart_preset_modbus(UartBuilder* b) {
            ->set_flow(b, UART_FLOW_NONE);
 }
 
-/* ---------- validation rules ----------
- * Tuỳ MCU/HAL thực tế, bạn có thể sửa/đổi luật ở đây.
- * - Baud: 110 .. 3,000,000 (ví dụ phổ biến PC/MCU)
- * - 9 data bits không đi kèm parity (nhiều MCU dùng bit thứ 9 làm parity)
- * - Chỉ cho stop bits 1 hoặc 2 (tránh 1.5 để portable)
- */
+/* ---------- validation rules ---------- 
+   for hardware specifics constrain */
 static bool validate(const UartConfig* c, char* err, size_t errsz) {
     if (c->baud < 110 || c->baud > 3000000u) {
         snprintf(err, errsz, "baud %u out of range [110..3000000]", c->baud);
@@ -143,7 +140,7 @@ static bool validate(const UartConfig* c, char* err, size_t errsz) {
         snprintf(err, errsz, "invalid stop bits");
         return false;
     }
-    /* bạn có thể thêm các ràng buộc platform-specific khác */
+    
     return true;
 }
 
@@ -154,8 +151,7 @@ bool uart_build(UartBuilder* b, UartConfig* out_cfg) {
         set_error(b, err);
         return false;
     }
-    *out_cfg = b->cfg;       /* copy ra đối tượng “bất biến” */
-    b->frozen = true;        /* tuỳ chọn: đóng băng để tránh đổi sau build */
+    *out_cfg = b->cfg;
     return true;
 }
 

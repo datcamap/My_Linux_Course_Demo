@@ -8,7 +8,6 @@
 #define CH_MAX_FRAME 512  /* tùy thiết bị, có thể tăng lên 1024/2048 */
 #endif
 
-/* Quy ước lỗi âm, >=0 là số byte hợp lệ */
 enum {
     CH_OK = 0,
     CH_ERR = -1,
@@ -23,7 +22,7 @@ typedef struct Channel Channel;
 struct Channel {
     int  (*send)(Channel* self, const uint8_t* data, size_t len);
     int  (*receive)(Channel* self, uint8_t* buffer, size_t bufferLength, size_t* out_len);
-    void*             impl;
+    void*             impl; // Additional functionalities
 };
 
 /* Helper inline */

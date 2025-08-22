@@ -33,10 +33,9 @@ typedef struct {
     UartFlow     flow;
 } UartConfig;
 
-/* tiện in ra cho demo */
 const char* uart_parity_str(UartParity p);
 const char* uart_stopbits_str(UartStopBits s);
 const char* uart_flow_str(UartFlow f);
 
-#endif /* UART_TYPES_H */
+#endif // UART_TYPES_H
 

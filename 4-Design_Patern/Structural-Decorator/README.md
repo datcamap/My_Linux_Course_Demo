@@ -10,3 +10,14 @@
         void*             impl;
     };
 ```
+
+- Mỗi decorator sẽ có 1 bộ đệm scratch để lưu lại data khi gửi hoặc nhận
+- Các hàm send và receive được implement sẽ xử lí và tiếp tục gửi data cho lớp decorator ở dưới
+
+```C
+    typedef struct {
+        Channel* inner;
+        uint8_t  key;
+        uint8_t  scratch[CH_MAX_FRAME];
+    } DecXorImpl;
+```

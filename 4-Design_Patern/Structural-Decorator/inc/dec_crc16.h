@@ -5,7 +5,7 @@
 
 typedef struct {
     Channel* inner;
-    uint8_t  scratch[CH_MAX_FRAME]; /* đệm xử lý */
+    uint8_t  scratch[CH_MAX_FRAME];
 } DecCRC16Impl;
 
 void dec_crc16_init(Channel* wrapper, DecCRC16Impl* storage, Channel* inner);

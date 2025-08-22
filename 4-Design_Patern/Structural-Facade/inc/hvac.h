@@ -34,4 +34,4 @@ static inline void hvac_set_mode(HVAC* h, HvacMode m)
     }
 }
 
-#endif /* HVAC_H */
+#endif // HVAC_H
