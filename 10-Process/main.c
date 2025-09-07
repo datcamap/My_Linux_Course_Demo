@@ -6,12 +6,14 @@
 
 void bai1(void);
 void bai2(char *argv_2);
-void bai3(void);
+void bai3(char *argv_2);
 
 static const char* command_line_args[] = {
     "bai1",
     "bai2",
-    "bai3"
+    "bai3",
+    "zombie",
+    "orphan"
 };
 
 int main(int argc, char *argv[]) {
@@ -21,8 +23,8 @@ int main(int argc, char *argv[]) {
     else if ( argc > 2 && (strcmp(argv[1], command_line_args[1]) == 0)) {
         bai2(argv[2]);
     }
-    else if ( argc > 1 && (strcmp(argv[1], command_line_args[2]) == 0)) {
-        bai3();
+    else if ( argc > 2 && (strcmp(argv[1], command_line_args[2]) == 0)) {
+        bai3(argv[2]);
     }
     else {
         printf("No valid command line argument provided. Please use one of the following:\n %s\n %s\n %s\n", \
@@ -41,24 +43,24 @@ void bai1(void)
         exit(123);
     } else if (ret > 0) {
         while(1) {
-            printf("I'm the parent process. My PID is %d and my child's PID is %d\n", getpid(), ret);
+            printf("I'm the parent process. My PID is %d and my child's PID is %d.\n", getpid(), ret);
             sleep(5);
             int status, wait_ret;
             wait_ret = wait(&status);
             if (wait_ret == -1) {
-                perror("Wait error\n");
+                perror("Wait error!\n");
                 continue;
             }
             if (WIFEXITED(status)) {
-                printf("Child process %d terminated with exit code %d\n", wait_ret, WEXITSTATUS(status));
+                printf("Child process %d terminated with exit code %d.\n", wait_ret, WEXITSTATUS(status));
                 ret = 0;
                 continue;
             } else {
-                printf("Child process %d terminated abnormally\n", wait_ret);
+                printf("Child process %d terminated abnormally.\n", wait_ret);
             }
         }
     } else {
-        perror("Forfeit\n");
+        perror("Forfeit!\n");
     }
 }
 
@@ -67,15 +69,48 @@ void bai2(char *argv_2)
     int ret;
     ret = fork();
     if (ret == 0) {
-        printf("I'm the child process. My PID is %d\n", getpid());
+        printf("I'm the child process. My PID is %d.\n", getpid());
         execlp(argv_2, argv_2, NULL);
         exit(123);
     } else if (ret > 0) {
         int status;
         wait(&status);
     } else {
-        perror("Fork failed\n");
+        perror("Fork failed!\n");
     }
 }
 
-void bai3(void) {}
+void bai3(char *argv_2)
+{
+    int ret;
+    ret = fork();
+    if (strcmp(argv_2, command_line_args[3]) == 0) {
+        /* Create zombie process */
+        if (ret == 0) {
+            printf("I'm the child process. My PID is %d.\n", getpid());
+            exit(123);
+        } else if (ret > 0) {
+            sleep(30);
+            int status;
+            wait(&status);
+        } else {
+            perror("Fork failed!\n");
+        }
+    } else if (strcmp(argv_2, command_line_args[4]) == 0) {
+        /* Create orphan process */
+        if (ret == 0) {
+            int countdown = 100;
+            while (countdown) {
+                printf("I'm the child process. My PID is %d. My parent's PID is %d.\n", getpid(), getppid());
+                countdown--;
+                sleep(1);
+            }
+            exit(123);
+        } else if (ret > 0) {
+            sleep(5);
+            printf("I'm the parent process. I slept for 5 secs and abandoned my child process.\n");
+        } else {
+            perror("Fork failed!\n");
+        }
+    }
+}
