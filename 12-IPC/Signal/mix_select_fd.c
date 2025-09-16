@@ -25,8 +25,8 @@ int main()
     signal(SIGTERM, term_callback);
 
     while(1) {
-        struct timeval timeout;
         fd_set readfds;
+        struct timeval timeout;
         FD_SET(STDIN_FILENO, &readfds);
         timeout.tv_sec = 5;
         if (select(STDIN_FILENO + 1, &readfds, NULL, NULL, &timeout) > 0) {
