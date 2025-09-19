@@ -2,6 +2,17 @@
 #include <linux/kernel.h>   // Contains types, macros, functions for the kernel
 #include <linux/init.h>     // Macros used to mark up functions e.g. __init __exit
 
+#define DEVICE_NAME "my_chardev"
+
+static int my_open()(struct inode *, struct file *)
+{
+
+}
+
+static int my_release(struct inode *, struct file *);
+static int my_read(struct file *, char __user *, size_t, loff_t *);
+static int my_write(struct file *, const char __user *, size_t, loff_t *);
+
 // Module metadata
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Your Name");
