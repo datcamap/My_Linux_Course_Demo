@@ -1,6 +1,10 @@
 obj-m += hello_lkm.o
+obj-m += my_character_device.o
 
 all:
+	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
+
+my_character_device:
 	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
 
 clean:
