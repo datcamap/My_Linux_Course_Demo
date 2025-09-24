@@ -53,21 +53,35 @@ static int my_release(struct inode *inode, struct file *file)
 
 static ssize_t my_read(struct file *file, char __user *user_buf, size_t size, loff_t *offset)
 {
-    ssize_t not_copy;
-
-    if (*offset >= char_dev.kbuf_len) {
+    if (*offset >= strlen(my_str)) {
         return 0;
     }
 
-    not_copy = (ssize_t)copy_to_user(user_buf, my_str, strlen(my_str));
-    *offset += strlen(my_str);
+    int bytes_read = strlen(my_str) - *offset;
+    if (bytes_read > size) {
+        bytes_read = size;
+    }
+    if (copy_to_user(user_buf, my_str + *offset, bytes_read)) {
+        return -1;
+    }
+    *offset += bytes_read;
 
-    return 1;
+    return bytes_read;
 }
 
 static ssize_t my_write(struct file *file, const char __user *user_buf, size_t size, loff_t *offset)
 {
-    return 0;
+    int bytes_write = size;
+    if (size > KBUFFER_CAP - 1) {
+        bytes_write = KBUFFER_CAP - 1;
+    }
+    if (copy_from_user(char_dev.kmalloc_ptr, user_buf, bytes_write)) {
+        return -1;
+    }
+    char_dev.kmalloc_ptr[KBUFFER_CAP] = '\0';
+    printk(DEVICE_NAME ": received %d bytes from user\n", bytes_write);
+
+    return bytes_write;
 }
 
 // Function that runs when the module is loaded

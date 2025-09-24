@@ -136,14 +136,14 @@ void chef_Donatello(void)
             }
         }
         sem_post(&shared_non_vegan->full);
-        sleep(1 + rand()%5);
+        sleep(5 + rand()%5);
     }
 }
 
 void chef_Portecelli(void)
 {
     const char *menu[] = {"Pistachio Pesto Pasta", \
-                        "vocado Fruit Salad"};
+                        "Avocado Fruit Salad"};
     
     while(1) {
         const char *cooking_dish = menu[rand()%2];
@@ -158,7 +158,7 @@ void chef_Portecelli(void)
             }
         }
         sem_post(&shared_vegan->full);
-        sleep(1 + rand()%5);
+        sleep(5 + rand()%5);
     }
 }
 
